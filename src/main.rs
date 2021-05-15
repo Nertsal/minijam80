@@ -3,38 +3,12 @@ use geng::prelude::*;
 mod camera;
 mod model;
 mod renderer;
+mod game_state;
 
+use game_state::*;
 use camera::*;
 use model::*;
 use renderer::*;
-
-struct State {
-    model: Model,
-    renderer: Renderer,
-}
-
-impl State {
-    fn new(geng: &Rc<Geng>, assets: &Rc<Assets>) -> Self {
-        Self {
-            renderer: Renderer::new(geng, assets),
-            model: Model::new(),
-        }
-    }
-}
-
-impl geng::State for State {
-    fn update(&mut self, delta_time: f64) {
-        self.model.update(delta_time as f32);
-        self.renderer.update(delta_time as f32);
-    }
-    fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
-        self.renderer.draw(framebuffer, &self.model);
-    }
-    fn handle_event(&mut self, event: geng::Event) {
-        self.model.handle_event(&event);
-        self.renderer.handle_event(&event);
-    }
-}
 
 fn main() {
     geng::setup_panic_handler();
@@ -56,7 +30,7 @@ fn main() {
             let geng = geng.clone();
             move |assets| {
                 let assets = assets.unwrap();
-                State::new(&geng, &Rc::new(assets))
+                GameState::new(&geng, &Rc::new(assets))
             }
         }),
     );

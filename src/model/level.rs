@@ -20,7 +20,7 @@ impl Level {
                 tiles
             },
             creatures: vec![Creature {
-                next_move: None,
+                next_move: Move::Wait,
                 position: vec2(0, 0),
                 creature_type: CreatureType::Player,
             }],
@@ -49,19 +49,18 @@ impl Level {
 
     pub fn make_move(&mut self) {
         for creature in &mut self.creatures {
-            if let Some(next_move) = &creature.next_move {
-                let direction = match next_move {
-                    Move::Up => vec2(0, 1),
-                    Move::Down => vec2(0, -1),
-                    Move::Right => vec2(1, 0),
-                    Move::Left => vec2(-1, 0),
-                };
-                let next_pos = creature.position + direction;
-                if let Some(tile) = self.tiles.get(&next_pos) {
-                    match tile {
-                        Tile::Empty => creature.position = next_pos,
-                        Tile::Bush => (),
-                    }
+            let direction = match creature.next_move {
+                Move::Up => vec2(0, 1),
+                Move::Down => vec2(0, -1),
+                Move::Right => vec2(1, 0),
+                Move::Left => vec2(-1, 0),
+                Move::Wait => vec2(0, 0),
+            };
+            let next_pos = creature.position + direction;
+            if let Some(tile) = self.tiles.get(&next_pos) {
+                match tile {
+                    Tile::Empty => creature.position = next_pos,
+                    Tile::Bush => (),
                 }
             }
         }
