@@ -6,23 +6,14 @@ pub struct Level {
 }
 
 impl Level {
-    pub fn test() -> Self {
-        Self {
-            entities: vec![
-                Entity {
-                    position: vec2(0, 0),
-                    entity_type: EntityType::Player,
-                    movement_type: MovementType::Creature {
-                        next_move: Move::Wait,
-                    },
-                },
-                Entity {
-                    position: vec2(3, 0),
-                    entity_type: EntityType::Bush,
-                    movement_type: MovementType::Static,
-                },
-            ],
-        }
+    pub fn empty() -> Self {
+        Self { entities: vec![] }
+    }
+
+    pub fn load(path: impl AsRef<std::path::Path>) -> std::io::Result<Self> {
+        Ok(serde_json::from_reader(std::io::BufReader::new(
+            std::fs::File::open(path)?,
+        ))?)
     }
 
     pub fn get_player_mut(&mut self) -> Option<&mut Entity> {

@@ -21,7 +21,7 @@ impl Model {
     pub fn new() -> Self {
         Self {
             mode: Mode::Play,
-            level: Some(Level::test()),
+            level: Some(Level::load("levels/custom/custom_level.json").unwrap()),
         }
     }
 
