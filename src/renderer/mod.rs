@@ -77,38 +77,40 @@ impl Renderer {
     }
     pub fn handle_event(&mut self, event: &geng::Event) {}
     pub fn draw(&mut self, framebuffer: &mut ugli::Framebuffer, model: &model::Model) {
-        for (tile_pos, tile) in &model.tiles {
-            self.draw_texture(
-                framebuffer,
-                &self.camera,
-                Mat4::translate(tile_pos.map(|x| x as f32).extend(0.0)),
-                &self.assets.grass,
-                Color::WHITE,
-            );
-            if let Some(overlay_texture) = match tile {
-                Tile::Bush => Some(&self.assets.bush),
-                Tile::Empty => None,
-            } {
+        if let Some(level) = &model.level {
+            for (tile_pos, tile) in &level.tiles {
                 self.draw_texture(
                     framebuffer,
                     &self.camera,
                     Mat4::translate(tile_pos.map(|x| x as f32).extend(0.0)),
-                    overlay_texture,
+                    &self.assets.grass,
+                    Color::WHITE,
+                );
+                if let Some(overlay_texture) = match tile {
+                    Tile::Bush => Some(&self.assets.bush),
+                    Tile::Empty => None,
+                } {
+                    self.draw_texture(
+                        framebuffer,
+                        &self.camera,
+                        Mat4::translate(tile_pos.map(|x| x as f32).extend(0.0)),
+                        overlay_texture,
+                        Color::WHITE,
+                    );
+                }
+            }
+            for creature in &level.creatures {
+                self.draw_texture(
+                    framebuffer,
+                    &self.camera,
+                    Mat4::translate(creature.position.map(|x| x as f32).extend(0.0)),
+                    match &creature.creature_type {
+                        model::CreatureType::Player => &self.assets.cat,
+                        model::CreatureType::Dog => &self.assets.dog,
+                    },
                     Color::WHITE,
                 );
             }
-        }
-        for creature in &model.creatures {
-            self.draw_texture(
-                framebuffer,
-                &self.camera,
-                Mat4::translate(creature.position.map(|x| x as f32).extend(0.0)),
-                match &creature.creature_type {
-                    model::CreatureType::Player => &self.assets.cat,
-                    model::CreatureType::Dog => &self.assets.dog,
-                },
-                Color::WHITE,
-            );
         }
     }
     fn draw_texture(
