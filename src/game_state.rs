@@ -89,7 +89,10 @@ impl GameState {
                 position: tile_pos,
                 entity_type: selected_entity,
                 controller: if spawn_player {
-                    Some(EntityController::Player)
+                    Some(EntityController {
+                        next_move: Move::Wait,
+                        controller_type: ControllerType::Player,
+                    })
                 } else {
                     EntityController::from_entity_type(selected_entity)
                 },
@@ -164,10 +167,7 @@ impl geng::State for GameState {
             },
         }
 
-        if let geng::Event::KeyDown {
-            key: geng::Key::Space,
-        } = event
-        {
+        if let geng::Event::KeyDown { key: geng::Key::R } = event {
             self.model.mode = match self.model.mode {
                 Mode::Edit => Mode::Play,
                 Mode::Play => Mode::Edit,

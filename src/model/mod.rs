@@ -29,7 +29,7 @@ impl Model {
 
     pub fn make_move(&mut self, player_move: Move) {
         if let Some(level) = &mut self.level {
-            level.make_move(player_move);
+            level.turn(player_move);
         }
     }
 
