@@ -27,6 +27,7 @@ pub struct Assets {
     pub mouse: Texture,
     pub dog: Texture,
     pub grass: Texture,
+    pub bush: Texture,
     #[asset(path = "flower*.png", range = "1..=3")]
     pub flower: Vec<Texture>,
 }
@@ -83,7 +84,19 @@ impl Renderer {
                 Mat4::translate(tile_pos.map(|x| x as f32).extend(0.0)),
                 &self.assets.grass,
                 Color::WHITE,
-            )
+            );
+            if let Some(overlay_texture) = match tile {
+                Tile::Bush => Some(&self.assets.bush),
+                Tile::Empty => None,
+            } {
+                self.draw_texture(
+                    framebuffer,
+                    &self.camera,
+                    Mat4::translate(tile_pos.map(|x| x as f32).extend(0.0)),
+                    overlay_texture,
+                    Color::WHITE,
+                );
+            }
         }
         for creature in &model.creatures {
             self.draw_texture(
@@ -95,7 +108,7 @@ impl Renderer {
                     model::CreatureType::Dog => &self.assets.dog,
                 },
                 Color::WHITE,
-            )
+            );
         }
     }
     fn draw_texture(

@@ -21,6 +21,7 @@ impl Model {
                         tiles.insert(vec2(x, y), Tile::Empty);
                     }
                 }
+                tiles.insert(vec2(3, 0), Tile::Bush);
                 tiles
             },
             creatures: vec![Creature {
