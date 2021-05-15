@@ -1,8 +1,10 @@
 use geng::prelude::*;
 
+mod camera;
 mod model;
 mod renderer;
 
+use camera::*;
 use model::*;
 use renderer::*;
 
@@ -12,9 +14,9 @@ struct State {
 }
 
 impl State {
-    fn new(geng: &Rc<Geng>) -> Self {
+    fn new(geng: &Rc<Geng>, assets: &Rc<Assets>) -> Self {
         Self {
-            renderer: Renderer::new(geng),
+            renderer: Renderer::new(geng, assets),
             model: Model::new(),
         }
     }
@@ -36,7 +38,26 @@ impl geng::State for State {
 
 fn main() {
     geng::setup_panic_handler();
+    if let Some(dir) = std::env::var_os("CARGO_MANIFEST_DIR") {
+        std::env::set_current_dir(std::path::Path::new(&dir).join("static")).unwrap();
+    } else {
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            if let Some(path) = std::env::current_exe().unwrap().parent() {
+                std::env::set_current_dir(path).unwrap();
+            }
+        }
+    }
     let geng = Rc::new(Geng::new(default()));
-    let state = State::new(&geng);
-    geng::run(geng, state);
+    let assets = <Assets as geng::LoadAsset>::load(&geng, ".");
+    geng::run(
+        geng.clone(),
+        geng::LoadingScreen::new(&geng, geng::EmptyLoadingScreen, assets, {
+            let geng = geng.clone();
+            move |assets| {
+                let assets = assets.unwrap();
+                State::new(&geng, &Rc::new(assets))
+            }
+        }),
+    );
 }
