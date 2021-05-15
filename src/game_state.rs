@@ -33,6 +33,7 @@ pub struct Assets {
 }
 
 pub struct GameState {
+    geng: Rc<Geng>,
     assets: Rc<Assets>,
     camera: Camera,
     model: Model,
@@ -44,6 +45,7 @@ pub struct GameState {
 impl GameState {
     pub fn new(geng: &Rc<Geng>, assets: &Rc<Assets>) -> Self {
         Self {
+            geng: geng.clone(),
             assets: assets.clone(),
             camera: Camera::new(10.0),
             renderer: Renderer::new(geng),
@@ -142,6 +144,11 @@ impl geng::State for GameState {
                             entity_type: EntityType::Bush,
                             movement_type: MovementType::Static,
                         })
+                    }
+                    geng::Key::S => {
+                        if self.geng.window().is_key_pressed(geng::Key::LCtrl) {
+                            self.model.save_level();
+                        }
                     }
                     _ => (),
                 },

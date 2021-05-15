@@ -134,6 +134,40 @@ checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
 
 [[package]]
 name = "batbox"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f76a1c4bc52a9329ddc750b6a166a3fd10f0603cf76f68fa71fcf2fe8670423e"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "backtrace",
+ "batbox-derive 0.6.0",
+ "bincode",
+ "dyn-clone",
+ "futures",
+ "js-sys",
+ "libc",
+ "log",
+ "maplit",
+ "once_cell",
+ "pin-utils",
+ "rand 0.7.3",
+ "ron",
+ "serde",
+ "serde_json",
+ "stderrlog",
+ "structopt",
+ "thiserror",
+ "threadpool",
+ "tinyfiledialogs",
+ "trans",
+ "url",
+ "wasm-bindgen",
+ "web-sys",
+]
+
+[[package]]
+name = "batbox"
 version = "0.7.0-alpha.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "afb5e36f9862711b1a899e377ed51071432e8e246822aec8ccd0ea1d810963b5"
@@ -141,7 +175,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "backtrace",
- "batbox-derive",
+ "batbox-derive 0.7.0-alpha.1",
  "bincode",
  "derive_more",
  "dyn-clone",
@@ -165,6 +199,17 @@ dependencies = [
  "url",
  "wasm-bindgen",
  "web-sys",
+]
+
+[[package]]
+name = "batbox-derive"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "216f063c1e3c1914f46598900831696a52c4f588c27d34d3d1120fbd6c5495e9"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -983,7 +1028,7 @@ version = "0.8.0-alpha.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "95944947a651b52de366eafb707b54bc2deb6772e9c801b632917c06ed3b7a7d"
 dependencies = [
- "batbox",
+ "batbox 0.7.0-alpha.3",
  "geng-derive",
  "geng-ui-macros",
  "glutin",
@@ -1005,7 +1050,7 @@ version = "0.8.0-alpha.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9370d81a57c0ae546f2e35587711d4dc40a2e5e76a3f715d8391f0b29901f8aa"
 dependencies = [
- "batbox",
+ "batbox 0.7.0-alpha.3",
  "itertools",
  "proc-macro2",
  "quote",
@@ -1484,6 +1529,7 @@ dependencies = [
 name = "minijam80"
 version = "0.1.0"
 dependencies = [
+ "batbox 0.6.0",
  "geng",
  "serde",
 ]
@@ -2535,6 +2581,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "trans"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9abfac034fcbe03dc6e169c6af348ef8cea41cedbd2a8b61560907423d109ba9"
+dependencies = [
+ "byteorder",
+ "heck",
+ "once_cell",
+ "trans-derive",
+]
+
+[[package]]
+name = "trans-derive"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8028e8115b12ef331c50ce002cf1b67e0bc3ef9d6ceb17e027c015cc8a57c576"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "ttf-parser"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2552,7 +2621,7 @@ version = "0.7.0-alpha.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e8543b4b1146d1e95702fd7b269e9c15017ca6c1daebd0a3cd41259cdde345a7"
 dependencies = [
- "batbox",
+ "batbox 0.7.0-alpha.3",
  "glutin",
  "image",
  "num_enum 0.5.1",
@@ -2567,7 +2636,7 @@ version = "0.7.0-alpha.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "27ac91825ab636bd6d50ac221e415d115bb04a61bda395a7fe8377b6c933baec"
 dependencies = [
- "batbox",
+ "batbox 0.7.0-alpha.3",
  "proc-macro2",
  "quote",
  "syn",
@@ -2579,7 +2648,7 @@ version = "0.7.0-alpha.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f6eb2695edd10f35438be0a052c7a6ac52f8ab99c2aaec308817dff67501fc1d"
 dependencies = [
- "batbox",
+ "batbox 0.7.0-alpha.3",
  "gl",
  "wasm-bindgen",
 ]

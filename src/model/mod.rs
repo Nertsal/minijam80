@@ -48,4 +48,16 @@ impl Model {
             level.remove_entity(position);
         }
     }
+
+    pub fn save_level(&self) {
+        batbox::save_file(
+            "Save custom level",
+            "levels/custom/custom_level.json",
+            |writer| {
+                serde_json::to_writer(writer, self.level.as_ref().unwrap())?;
+                Ok(())
+            },
+        )
+        .unwrap();
+    }
 }
