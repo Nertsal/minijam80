@@ -8,13 +8,20 @@ pub struct Level {
 impl Level {
     pub fn test() -> Self {
         Self {
-            entities: vec![Entity {
-                position: vec2(0, 0),
-                movement_type: MovementType::Creature {
-                    next_move: Move::Wait,
+            entities: vec![
+                Entity {
+                    position: vec2(0, 0),
+                    entity_type: EntityType::Player,
+                    movement_type: MovementType::Creature {
+                        next_move: Move::Wait,
+                    },
                 },
-                entity_type: EntityType::Player,
-            }],
+                Entity {
+                    position: vec2(3, 0),
+                    entity_type: EntityType::Bush,
+                    movement_type: MovementType::Static,
+                },
+            ],
         }
     }
 
