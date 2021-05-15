@@ -8,6 +8,7 @@ pub use creature::*;
 use level::*;
 pub use tile::*;
 
+#[derive(Clone, Copy)]
 pub enum Mode {
     Play,
     Edit,
@@ -33,6 +34,12 @@ impl Model {
             let player = level.get_player_mut().unwrap();
             player.next_move = player_move;
             level.make_move()
+        }
+    }
+
+    pub fn set_tile(&mut self, position: Vec2<i32>, tile: Tile) {
+        if let Some(level) = &mut self.level {
+            level.tiles.insert(position, tile);
         }
     }
 }
