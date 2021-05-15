@@ -103,6 +103,7 @@ impl GameState {
             Mat4::translate(entity.position.map(|x| x as f32).extend(0.0)),
             match &entity.entity_type {
                 model::EntityType::Bush => &self.assets.bush,
+                model::EntityType::Doghouse => &self.assets.doghouse,
                 model::EntityType::Cat => &self.assets.cat,
                 model::EntityType::Dog => &self.assets.dog,
                 model::EntityType::Mouse => &self.assets.mouse,

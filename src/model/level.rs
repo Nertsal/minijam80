@@ -86,7 +86,7 @@ impl Level {
                             vec![EntityType::Dog],
                             vec![EntityType::Mouse],
                         ),
-                        ControllerType::Dog => self.get_move_direction(
+                        ControllerType::Dog { .. } => self.get_move_direction(
                             entity,
                             VIEW_RADIUS,
                             vec![],
@@ -118,18 +118,23 @@ impl Level {
     fn make_moves(&mut self) {
         for entity_index in 0..self.entities.len() {
             let mut entity = self.entities.get(entity_index).unwrap().clone();
-            if let Some(controller) = &entity.controller {
-                let entity_move = controller.next_move;
-                self.move_entity(&mut entity, entity_move);
-            }
+            self.move_entity(&mut entity);
             *self.entities.get_mut(entity_index).unwrap() = entity;
         }
     }
 
-    fn move_entity(&mut self, entity: &mut Entity, entity_move: Move) {
-        let next_pos = entity.position + entity_move.direction();
-        if self.get_entity(next_pos).is_none() {
-            entity.position = next_pos;
+    fn move_entity(&mut self, entity: &mut Entity) {
+        if let Some(controller) = &entity.controller {
+            let next_pos = entity.position + controller.next_move.direction();
+            let can_move = match &controller.controller_type {
+                ControllerType::Dog {
+                    chain: Some(Chain { origin, distance }),
+                } => position_distance(next_pos, *origin) <= *distance,
+                _ => true,
+            };
+            if can_move && self.get_entity(next_pos).is_none() {
+                entity.position = next_pos;
+            }
         }
     }
 

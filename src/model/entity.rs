@@ -9,8 +9,12 @@ pub struct Entity {
 
 impl Entity {
     pub fn distance(&self, other: &Self) -> i32 {
-        (self.position.x - other.position.x).abs() + (self.position.y - other.position.y).abs()
+        position_distance(self.position, other.position)
     }
+}
+
+pub fn position_distance(pos1: Vec2<i32>, pos2: Vec2<i32>) -> i32 {
+    (pos1.x - pos2.x).abs() + (pos1.y - pos2.y).abs()
 }
 
 #[derive(Serialize, Deserialize, Clone, Copy)]
@@ -50,6 +54,7 @@ pub enum EntityType {
     Cat,
     Dog,
     Mouse,
+    Doghouse,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -62,8 +67,9 @@ impl EntityController {
     pub fn from_entity_type(entity_type: EntityType) -> Option<Self> {
         match entity_type {
             EntityType::Bush => None,
+            EntityType::Doghouse => None,
             EntityType::Cat => Some(ControllerType::Cat),
-            EntityType::Dog => Some(ControllerType::Dog),
+            EntityType::Dog => Some(ControllerType::Dog { chain: None }),
             EntityType::Mouse => Some(ControllerType::Mouse),
         }
         .map(|controller_type| Self {
@@ -73,10 +79,16 @@ impl EntityController {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Copy)]
+#[derive(Serialize, Deserialize, Clone)]
 pub enum ControllerType {
     Player,
     Cat,
-    Dog,
+    Dog { chain: Option<Chain> },
     Mouse,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct Chain {
+    pub origin: Vec2<i32>,
+    pub distance: i32,
 }
