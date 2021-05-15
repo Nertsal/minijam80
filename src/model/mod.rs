@@ -29,11 +29,7 @@ impl Model {
 
     pub fn make_move(&mut self, player_move: Move) {
         if let Some(level) = &mut self.level {
-            let player = level.get_player_mut().unwrap();
-            player.movement_type = MovementType::Creature {
-                next_move: player_move,
-            };
-            level.make_move()
+            level.make_move(player_move);
         }
     }
 

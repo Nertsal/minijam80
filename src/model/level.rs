@@ -22,7 +22,7 @@ impl Level {
             .iter()
             .enumerate()
             .find(|(_, creature)| {
-                if let EntityType::Player = creature.entity_type {
+                if let Some(EntityController::Player) = creature.controller {
                     true
                 } else {
                     false
@@ -36,24 +36,29 @@ impl Level {
         }
     }
 
-    pub fn make_move(&mut self) {
+    pub fn make_move(&mut self, player_move: Move) {
         for entity_index in 0..self.entities.len() {
             let mut entity = self.entities[entity_index].clone();
-            match entity.movement_type {
-                MovementType::Static => (),
-                MovementType::Creature { next_move } => {
-                    let direction = match next_move {
-                        Move::Up => vec2(0, 1),
-                        Move::Down => vec2(0, -1),
-                        Move::Right => vec2(1, 0),
-                        Move::Left => vec2(-1, 0),
-                        Move::Wait => vec2(0, 0),
-                    };
-                    let next_pos = entity.position + direction;
-                    if self.get_entity(next_pos).is_none() {
-                        entity.position = next_pos;
+            match entity.controller {
+                Some(controller) => match controller {
+                    EntityController::Player => {
+                        let direction = match player_move {
+                            Move::Up => vec2(0, 1),
+                            Move::Down => vec2(0, -1),
+                            Move::Right => vec2(1, 0),
+                            Move::Left => vec2(-1, 0),
+                            Move::Wait => vec2(0, 0),
+                        };
+                        let next_pos = entity.position + direction;
+                        if self.get_entity(next_pos).is_none() {
+                            entity.position = next_pos;
+                        }
                     }
-                }
+                    EntityController::Cat => {}
+                    EntityController::Dog => {}
+                    EntityController::Mouse => {}
+                },
+                None => {}
             }
             *self.entities.get_mut(entity_index).unwrap() = entity;
         }

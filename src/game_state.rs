@@ -74,9 +74,10 @@ impl GameState {
             &self.camera,
             Mat4::translate(entity.position.map(|x| x as f32).extend(0.0)),
             match &entity.entity_type {
-                model::EntityType::Player => &self.assets.cat,
-                model::EntityType::Dog => &self.assets.dog,
                 model::EntityType::Bush => &self.assets.bush,
+                model::EntityType::Cat => &self.assets.cat,
+                model::EntityType::Dog => &self.assets.dog,
+                model::EntityType::Mouse => &self.assets.mouse,
             },
             Color::WHITE,
         );
@@ -142,7 +143,7 @@ impl geng::State for GameState {
                         self.selected_entity = Some(Entity {
                             position: vec2(0, 0),
                             entity_type: EntityType::Bush,
-                            movement_type: MovementType::Static,
+                            controller: None,
                         })
                     }
                     geng::Key::S => {
