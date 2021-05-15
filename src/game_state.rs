@@ -39,7 +39,7 @@ pub struct GameState {
     model: Model,
     renderer: Renderer,
     framebuffer_size: Vec2<f32>,
-    selected_entity: Option<Entity>,
+    selected_entity: Option<EntityType>,
 }
 
 impl GameState {
@@ -81,6 +81,21 @@ impl GameState {
             },
             Color::WHITE,
         );
+    }
+    fn spawn_selected(&mut self, mouse_position: Vec2<f64>, spawn_player: bool) {
+        let tile_pos = self.camera_to_tile_pos(mouse_position.map(|x| x as f32));
+        match self.selected_entity.clone() {
+            Some(selected_entity) => self.model.set_entity(Entity {
+                position: tile_pos,
+                entity_type: selected_entity,
+                controller: if spawn_player {
+                    Some(EntityController::Player)
+                } else {
+                    EntityController::from_entity_type(selected_entity)
+                },
+            }),
+            None => self.model.remove_entity(tile_pos),
+        }
     }
 }
 
@@ -127,25 +142,17 @@ impl geng::State for GameState {
                 geng::Event::MouseDown {
                     position,
                     button: geng::MouseButton::Left,
-                } => {
-                    let tile_pos = self.camera_to_tile_pos(position.map(|x| x as f32));
-                    match self.selected_entity.clone() {
-                        Some(selected_entity) => self.model.set_entity(Entity {
-                            position: tile_pos,
-                            ..selected_entity
-                        }),
-                        None => self.model.remove_entity(tile_pos),
-                    }
-                }
+                } => self.spawn_selected(position, false),
+                geng::Event::MouseDown {
+                    position,
+                    button: geng::MouseButton::Right,
+                } => self.spawn_selected(position, true),
                 geng::Event::KeyDown { key } => match key {
                     geng::Key::Num1 => self.selected_entity = None,
-                    geng::Key::Num2 => {
-                        self.selected_entity = Some(Entity {
-                            position: vec2(0, 0),
-                            entity_type: EntityType::Bush,
-                            controller: None,
-                        })
-                    }
+                    geng::Key::Num2 => self.selected_entity = Some(EntityType::Bush),
+                    geng::Key::Num3 => self.selected_entity = Some(EntityType::Cat),
+                    geng::Key::Num4 => self.selected_entity = Some(EntityType::Dog),
+                    geng::Key::Num5 => self.selected_entity = Some(EntityType::Mouse),
                     geng::Key::S => {
                         if self.geng.window().is_key_pressed(geng::Key::LCtrl) {
                             self.model.save_level();
@@ -155,6 +162,16 @@ impl geng::State for GameState {
                 },
                 _ => (),
             },
+        }
+
+        if let geng::Event::KeyDown {
+            key: geng::Key::Space,
+        } = event
+        {
+            self.model.mode = match self.model.mode {
+                Mode::Edit => Mode::Play,
+                Mode::Play => Mode::Edit,
+            }
         }
     }
 }
