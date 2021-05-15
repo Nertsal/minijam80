@@ -1,12 +1,10 @@
 use super::*;
 
-mod creature;
+mod entity;
 mod level;
-mod tile;
 
-pub use creature::*;
+pub use entity::*;
 use level::*;
-pub use tile::*;
 
 #[derive(Clone, Copy)]
 pub enum Mode {
@@ -32,14 +30,22 @@ impl Model {
     pub fn make_move(&mut self, player_move: Move) {
         if let Some(level) = &mut self.level {
             let player = level.get_player_mut().unwrap();
-            player.next_move = player_move;
+            player.movement_type = MovementType::Creature {
+                next_move: player_move,
+            };
             level.make_move()
         }
     }
 
-    pub fn set_tile(&mut self, position: Vec2<i32>, tile: Tile) {
+    pub fn set_entity(&mut self, entity: Entity) {
         if let Some(level) = &mut self.level {
-            level.tiles.insert(position, tile);
+            level.set_entity(entity);
+        }
+    }
+
+    pub fn remove_entity(&mut self, position: Vec2<i32>) {
+        if let Some(level) = &mut self.level {
+            level.remove_entity(position);
         }
     }
 }

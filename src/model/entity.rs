@@ -1,10 +1,16 @@
 use super::*;
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct Creature {
+pub struct Entity {
     pub position: Vec2<i32>,
-    pub next_move: Move,
-    pub creature_type: CreatureType,
+    pub movement_type: MovementType,
+    pub entity_type: EntityType,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub enum MovementType {
+    Static,
+    Creature { next_move: Move },
 }
 
 #[derive(Serialize, Deserialize, Clone, Copy)]
@@ -17,7 +23,8 @@ pub enum Move {
 }
 
 #[derive(Serialize, Deserialize, Clone, Copy)]
-pub enum CreatureType {
+pub enum EntityType {
+    Bush,
     Player,
     Dog,
 }

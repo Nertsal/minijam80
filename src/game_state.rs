@@ -38,7 +38,7 @@ pub struct GameState {
     model: Model,
     renderer: Renderer,
     framebuffer_size: Vec2<f32>,
-    selected_tile: Tile,
+    selected_entity: Option<Entity>,
 }
 
 impl GameState {
@@ -49,8 +49,35 @@ impl GameState {
             renderer: Renderer::new(geng),
             model: Model::new(),
             framebuffer_size: vec2(1.0, 1.0),
-            selected_tile: Tile::Empty,
+            selected_entity: None,
         }
+    }
+    fn camera_to_tile_pos(&self, position: Vec2<f32>) -> Vec2<i32> {
+        self.camera
+            .screen_to_world(self.framebuffer_size, position.map(|x| x as f32))
+            .map(|x| x.floor() as i32)
+    }
+    fn draw_tile(&self, framebuffer: &mut ugli::Framebuffer, tile_pos: Vec2<i32>) {
+        self.renderer.draw(
+            framebuffer,
+            &self.camera,
+            Mat4::translate(tile_pos.map(|x| x as f32).extend(0.0)),
+            &self.assets.grass,
+            Color::WHITE,
+        )
+    }
+    fn draw_entity(&self, framebuffer: &mut ugli::Framebuffer, entity: &Entity) {
+        self.renderer.draw(
+            framebuffer,
+            &self.camera,
+            Mat4::translate(entity.position.map(|x| x as f32).extend(0.0)),
+            match &entity.entity_type {
+                model::EntityType::Player => &self.assets.cat,
+                model::EntityType::Dog => &self.assets.dog,
+                model::EntityType::Bush => &self.assets.bush,
+            },
+            Color::WHITE,
+        );
     }
 }
 
@@ -62,38 +89,17 @@ impl geng::State for GameState {
     fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
         self.framebuffer_size = framebuffer.size().map(|x| x as f32);
         if let Some(level) = &self.model.level {
-            for (tile_pos, tile) in &level.tiles {
-                self.renderer.draw(
-                    framebuffer,
-                    &self.camera,
-                    Mat4::translate(tile_pos.map(|x| x as f32).extend(0.0)),
-                    &self.assets.grass,
-                    Color::WHITE,
-                );
-                if let Some(overlay_texture) = match tile {
-                    Tile::Bush => Some(&self.assets.bush),
-                    Tile::Empty => None,
-                } {
-                    self.renderer.draw(
-                        framebuffer,
-                        &self.camera,
-                        Mat4::translate(tile_pos.map(|x| x as f32).extend(0.0)),
-                        overlay_texture,
-                        Color::WHITE,
-                    );
+            let tile_low_left_pos = self.camera_to_tile_pos(vec2(0.0, 0.0));
+            let tile_top_right_pos = self.camera_to_tile_pos(self.framebuffer_size);
+            for x in tile_low_left_pos.x..=tile_top_right_pos.x {
+                for y in tile_low_left_pos.y..=tile_top_right_pos.y {
+                    let tile_pos = vec2(x, y);
+                    self.draw_tile(framebuffer, tile_pos);
                 }
             }
-            for creature in &level.creatures {
-                self.renderer.draw(
-                    framebuffer,
-                    &self.camera,
-                    Mat4::translate(creature.position.map(|x| x as f32).extend(0.0)),
-                    match &creature.creature_type {
-                        model::CreatureType::Player => &self.assets.cat,
-                        model::CreatureType::Dog => &self.assets.dog,
-                    },
-                    Color::WHITE,
-                );
+
+            for entity in &level.entities {
+                self.draw_entity(framebuffer, entity);
             }
         }
     }
@@ -119,15 +125,24 @@ impl geng::State for GameState {
                     position,
                     button: geng::MouseButton::Left,
                 } => {
-                    let tile_pos = self
-                        .camera
-                        .screen_to_world(self.framebuffer_size, position.map(|x| x as f32))
-                        .map(|x| x.floor() as i32);
-                    self.model.set_tile(tile_pos, self.selected_tile);
+                    let tile_pos = self.camera_to_tile_pos(position.map(|x| x as f32));
+                    match self.selected_entity.clone() {
+                        Some(selected_entity) => self.model.set_entity(Entity {
+                            position: tile_pos,
+                            ..selected_entity
+                        }),
+                        None => self.model.remove_entity(tile_pos),
+                    }
                 }
                 geng::Event::KeyDown { key } => match key {
-                    geng::Key::Num1 => self.selected_tile = Tile::Empty,
-                    geng::Key::Num2 => self.selected_tile = Tile::Bush,
+                    geng::Key::Num1 => self.selected_entity = None,
+                    geng::Key::Num2 => {
+                        self.selected_entity = Some(Entity {
+                            position: vec2(0, 0),
+                            entity_type: EntityType::Bush,
+                            movement_type: MovementType::Static,
+                        })
+                    }
                     _ => (),
                 },
                 _ => (),
