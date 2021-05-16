@@ -88,6 +88,16 @@ impl geng::State for GameState {
                 &self.assets.font,
                 Color::BLACK,
             );
+            self.level_renderer.renderer.draw_text(
+                framebuffer,
+                &Camera::new(10.0),
+                "r restarts",
+                vec2(0.0, -4.9),
+                0.5,
+                1.0,
+                &self.assets.font,
+                Color::BLACK,
+            );
         } else {
             ugli::clear(framebuffer, Some(Color::BLACK), None);
             self.level_renderer.renderer.draw_text(
