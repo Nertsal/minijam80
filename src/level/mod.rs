@@ -1,9 +1,11 @@
 use super::*;
 
 mod entity;
+mod id;
 mod pathfind;
 
 pub use entity::*;
+use id::*;
 
 const VIEW_RADIUS: i32 = 3;
 
@@ -11,8 +13,9 @@ const VIEW_RADIUS: i32 = 3;
 pub struct Level {
     #[serde(skip)]
     pub path: String,
+    id_generator: IdGenerator,
     pub next_level: Option<String>,
-    pub entities: Vec<Entity>,
+    pub entities: HashMap<Id, Entity>,
 }
 
 impl Level {
@@ -24,26 +27,20 @@ impl Level {
     pub fn empty() -> Self {
         Self {
             path: "".to_owned(),
+            id_generator: IdGenerator::new(),
             next_level: None,
-            entities: vec![],
+            entities: HashMap::new(),
         }
-    }
-
-    fn load(path: impl AsRef<std::path::Path>) -> std::io::Result<Self> {
-        Ok(serde_json::from_reader(std::io::BufReader::new(
-            std::fs::File::open(path)?,
-        ))?)
     }
 
     pub fn remove_entity(&mut self, position: Vec2<i32>) -> Option<Entity> {
         if let Some(i) = self
             .entities
             .iter()
-            .enumerate()
             .find(|(_, entity)| entity.position == position)
-            .map(|(i, _)| i)
+            .map(|(&i, _)| i)
         {
-            Some(self.entities.remove(i))
+            self.entities.remove(&i)
         } else {
             None
         }
@@ -51,19 +48,25 @@ impl Level {
 
     pub fn set_entity(&mut self, entity: Entity) -> Option<Entity> {
         let old_entity = self.remove_entity(entity.position);
-        self.entities.push(entity);
+        self.entities.insert(self.id_generator.gen(), entity);
         old_entity
     }
 
     fn get_entity(&self, position: Vec2<i32>) -> Option<&Entity> {
         self.entities
-            .iter()
+            .values()
+            .find(|entity| entity.position == position)
+    }
+
+    fn get_entity_mut(&mut self, position: Vec2<i32>) -> Option<&mut Entity> {
+        self.entities
+            .values_mut()
             .find(|entity| entity.position == position)
     }
 
     fn calc_moves(&mut self, player_move: Move) {
         let mut updates = HashMap::new();
-        for (entity_index, entity) in self.entities.iter().enumerate() {
+        for (&entity_id, entity) in self.entities.iter() {
             match &entity.controller {
                 Some(controller) => {
                     let direction = match controller.controller_type {
@@ -76,13 +79,13 @@ impl Level {
                         ),
                     };
                     let next_move = Move::from_direction(direction).unwrap_or(Move::Wait);
-                    updates.insert(entity_index, next_move);
+                    updates.insert(entity_id, next_move);
                 }
                 None => {}
             }
         }
-        for (update_index, update_move) in updates {
-            let entity = self.entities.get_mut(update_index).unwrap();
+        for (update_id, update_move) in updates {
+            let entity = self.entities.get_mut(&update_id).unwrap();
             if let Some(controller) = &mut entity.controller {
                 controller.next_move = update_move;
             } else {
@@ -92,11 +95,12 @@ impl Level {
     }
 
     fn make_moves(&mut self) {
-        for entity_index in 0..self.entities.len() {
-            if let Some(mut entity) = self.entities.get(entity_index).cloned() {
+        let entity_ids: Vec<Id> = self.entities.keys().copied().collect();
+        for entity_id in entity_ids {
+            if let Some(mut entity) = self.entities.get(&entity_id).cloned() {
                 self.move_entity(&mut entity);
-                self.collide_entity(&mut entity);
-                *self.entities.get_mut(entity_index).unwrap() = entity;
+                self.collide_entity(&entity);
+                *self.entities.get_mut(&entity_id).unwrap() = entity;
             }
         }
     }
@@ -107,7 +111,7 @@ impl Level {
             if targets.len() > 0
                 && !self
                     .entities
-                    .iter()
+                    .values()
                     .any(|entity| targets.contains(&entity.entity_type))
             {
                 return true;
@@ -117,7 +121,7 @@ impl Level {
     }
 
     fn get_player(&self) -> Option<&Entity> {
-        self.entities.iter().find(|entity| {
+        self.entities.values().find(|entity| {
             if let Some(EntityController {
                 controller_type: ControllerType::Player,
                 ..
@@ -132,28 +136,70 @@ impl Level {
 
     fn move_entity(&mut self, entity: &mut Entity) {
         if let Some(controller) = &entity.controller {
-            let next_pos = entity.position + controller.next_move.direction();
+            let direction = controller.next_move.direction();
+            let position = entity.position;
+            let next_pos = position + direction;
             let can_move = match &controller.controller_type {
                 ControllerType::Dog {
                     chain: Some(Chain { origin, distance }),
                 } => position_distance(next_pos, *origin) <= *distance,
                 _ => true,
             };
-            if can_move
-                && self
-                    .get_entity(next_pos)
-                    .map_or(true, |entity| !entity.entity_type.collidable())
-            {
-                entity.position = next_pos;
+            if can_move {
+                if self.can_move(position, direction) {
+                    entity.position = next_pos;
+                } else if let Some(last_position) = self.can_push(position, direction) {
+                    self.push(position, last_position, direction);
+                    entity.position = next_pos;
+                }
             }
         }
     }
 
-    fn collide_entity(&mut self, entity: &mut Entity) {
-        if let Some(other) = self.get_entity(entity.position) {
+    fn collide_entity(&mut self, entity: &Entity) {
+        let position = entity.position;
+        if let Some(other) = self.get_entity(position) {
             let attractors = entity.entity_type.attractors();
             if attractors.contains(&other.entity_type) {
-                self.remove_entity(entity.position);
+                self.remove_entity(position);
+            }
+        }
+    }
+
+    fn can_move(&self, position: Vec2<i32>, direction: Vec2<i32>) -> bool {
+        if let Some(entity) = self.get_entity(position) {
+            let next_pos = position + direction;
+            if let Some(next_entity) = self.get_entity(next_pos) {
+                if entity
+                    .entity_type
+                    .attractors()
+                    .contains(&next_entity.entity_type)
+                {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
+    fn can_push(&self, position: Vec2<i32>, direction: Vec2<i32>) -> Option<Vec2<i32>> {
+        let next_pos = position + direction;
+        self.get_entity(next_pos).map_or(Some(position), |entity| {
+            match entity.entity_type.property() {
+                Some(EntityProperty::Pushable) => self.can_push(entity.position, direction),
+                Some(EntityProperty::Collidable) => None,
+                _ => Some(position),
+            }
+        })
+    }
+
+    fn push(&mut self, origin: Vec2<i32>, last_position: Vec2<i32>, direction: Vec2<i32>) {
+        if last_position != origin {
+            if let Some(entity) = self.get_entity_mut(last_position) {
+                let next_pos = last_position + direction;
+                entity.position = next_pos;
+                let last_pos = last_position - direction;
+                self.push(origin, last_pos, direction);
             }
         }
     }
@@ -167,7 +213,7 @@ impl Level {
     ) -> Vec2<i32> {
         if let Some(direction) = self
             .entities
-            .iter()
+            .values()
             .filter_map(|other| {
                 if avoids.contains(&other.entity_type) {
                     let distance = entity.distance(other);
@@ -196,7 +242,7 @@ impl Level {
             }
         } else if let Some(direction) = self
             .entities
-            .iter()
+            .values()
             .filter_map(|other| {
                 if attractors.contains(&other.entity_type) {
                     let distance = entity.distance(other);

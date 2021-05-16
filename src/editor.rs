@@ -91,6 +91,13 @@ impl geng::State for Editor {
                 self.select_delta(if delta > 0.0 { 1 } else { -1 });
             }
             geng::Event::KeyDown { key } => match key {
+                geng::Key::Num1 => self.selected_entity = None,
+                geng::Key::Num2 => self.selected_entity = Some(EntityType::Bush),
+                geng::Key::Num3 => self.selected_entity = Some(EntityType::Cat),
+                geng::Key::Num4 => self.selected_entity = Some(EntityType::Dog),
+                geng::Key::Num5 => self.selected_entity = Some(EntityType::Mouse),
+                geng::Key::Num6 => self.selected_entity = Some(EntityType::Box),
+                geng::Key::Num7 => self.selected_entity = Some(EntityType::Cheese),
                 geng::Key::S => {
                     if self.geng.window().is_key_pressed(geng::Key::LCtrl) {
                         batbox::save_file(

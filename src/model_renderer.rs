@@ -30,7 +30,7 @@ impl LevelRenderer {
             }
         }
 
-        for entity in &level.entities {
+        for entity in level.entities.values() {
             self.renderer.draw(
                 framebuffer,
                 &camera,
@@ -41,6 +41,11 @@ impl LevelRenderer {
                     level::EntityType::Cat => &self.assets.cat,
                     level::EntityType::Dog => &self.assets.dog,
                     level::EntityType::Mouse => &self.assets.mouse,
+                    level::EntityType::Box => &self.assets.box_asset,
+                    level::EntityType::Cheese => &self.assets.cheese,
+                    level::EntityType::Fence => &self.assets.fence,
+                    level::EntityType::Wall => &self.assets.wall,
+                    level::EntityType::Water => &self.assets.water,
                 },
                 Color::WHITE,
             );

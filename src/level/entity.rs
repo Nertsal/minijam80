@@ -55,13 +55,18 @@ pub enum EntityType {
     Dog,
     Mouse,
     Doghouse,
+    Box,
+    Cheese,
+    Fence,
+    Wall,
+    Water,
 }
 
 impl EntityType {
     pub fn enemies(&self) -> Vec<Self> {
         use EntityType::*;
         match self {
-            Bush | Doghouse => vec![],
+            Bush | Doghouse | Box | Cheese | Fence | Wall | Water => vec![],
             Cat => vec![Dog],
             Dog => vec![],
             Mouse => vec![Cat],
@@ -70,19 +75,26 @@ impl EntityType {
     pub fn attractors(&self) -> Vec<Self> {
         use EntityType::*;
         match self {
-            Bush | Doghouse => vec![],
+            Bush | Doghouse | Box | Cheese | Fence | Wall | Water => vec![],
             Cat => vec![Mouse],
             Dog => vec![Cat],
-            Mouse => vec![],
+            Mouse => vec![Cheese],
         }
     }
-    pub fn collidable(&self) -> bool {
+    pub fn property(&self) -> Option<EntityProperty> {
         use EntityType::*;
         match self {
-            Bush | Doghouse => true,
-            _ => false,
+            Bush | Doghouse | Fence | Wall | Water => Some(EntityProperty::Collidable),
+            Box | Cheese => Some(EntityProperty::Pushable),
+            _ => None,
         }
     }
+}
+
+#[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+pub enum EntityProperty {
+    Collidable,
+    Pushable,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -93,12 +105,12 @@ pub struct EntityController {
 
 impl EntityController {
     pub fn from_entity_type(entity_type: EntityType) -> Option<Self> {
+        use EntityType::*;
         match entity_type {
-            EntityType::Bush => None,
-            EntityType::Doghouse => None,
-            EntityType::Cat => Some(ControllerType::Cat),
-            EntityType::Dog => Some(ControllerType::Dog { chain: None }),
-            EntityType::Mouse => Some(ControllerType::Mouse),
+            Bush | Doghouse | Box | Cheese | Fence | Wall | Water => None,
+            Cat => Some(ControllerType::Cat),
+            Dog => Some(ControllerType::Dog { chain: None }),
+            Mouse => Some(ControllerType::Mouse),
         }
         .map(|controller_type| Self {
             next_move: Move::Wait,
