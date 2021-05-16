@@ -1,5 +1,7 @@
 use super::*;
 
+mod pathfind;
+
 const VIEW_RADIUS: i32 = 3;
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -145,40 +147,42 @@ impl Level {
         avoids: Vec<EntityType>,
         attractors: Vec<EntityType>,
     ) -> Vec2<i32> {
-        let avoid: Vec<Vec2<i32>> = self
+        if let Some(direction) = self
             .entities
             .iter()
-            .filter(|other| {
-                avoids.contains(&other.entity_type) && entity.distance(other) <= view_radius
-            })
-            .map(|entity| entity.position)
-            .collect();
-        if avoid.len() > 0 {
-            let mut direction = vec2(0.0, 0.0);
-            for avoid_pos in avoid {
-                direction += (entity.position - avoid_pos).map(|x| x as f32).normalize();
-            }
-            direction.map(|x| x.ceil() as i32)
-        } else {
-            let closest = self
-                .entities
-                .iter()
-                .filter_map(|other| {
+            .filter_map(|other| {
+                if avoids.contains(&other.entity_type) {
                     let distance = entity.distance(other);
-                    if attractors.contains(&other.entity_type) && distance <= view_radius {
-                        Some((other.position, distance))
-                    } else {
-                        None
+                    let direction = self.can_see(entity, other, view_radius);
+                    if let Some(direction) = direction {
+                        return Some((other.position, distance, direction));
                     }
-                })
-                .min_by_key(|&(_, distance)| distance)
-                .map(|(other_pos, _)| other_pos);
-            if let Some(closest) = closest {
-                let direction = (closest - entity.position).map(|x| x as f32).normalize();
-                direction.map(|x| x.ceil() as i32)
-            } else {
-                vec2(0, 0)
-            }
+                }
+                None
+            })
+            .min_by_key(|&(_, distance, _)| distance)
+            .map(|(_, _, direction)| direction)
+        {
+            -direction
+        } else if let Some(direction) = self
+            .entities
+            .iter()
+            .filter_map(|other| {
+                if attractors.contains(&other.entity_type) {
+                    let distance = entity.distance(other);
+                    let direction = self.can_see(entity, other, view_radius);
+                    if let Some(direction) = direction {
+                        return Some((other.position, distance, direction));
+                    }
+                }
+                None
+            })
+            .min_by_key(|&(_, distance, _)| distance)
+            .map(|(_, _, direction)| direction)
+        {
+            dbg!(direction)
+        } else {
+            vec2(0, 0)
         }
     }
 }
