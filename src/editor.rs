@@ -70,6 +70,7 @@ impl geng::State for Editor {
     fn update(&mut self, delta_time: f64) {}
     fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
         self.framebuffer_size = framebuffer.size();
+        self.camera.optimize(&self.level);
         self.level_renderer
             .draw(&self.level, &self.camera, framebuffer);
         self.geng.default_font().draw(

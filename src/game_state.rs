@@ -56,6 +56,7 @@ impl geng::State for GameState {
         }
     }
     fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
+        self.camera.optimize(&self.level);
         self.level_renderer
             .draw(&self.level, &self.camera, framebuffer);
     }
