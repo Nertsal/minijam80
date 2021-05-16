@@ -28,9 +28,7 @@ pub struct Level {
 impl Level {
     pub fn turn(&mut self, player_move: Move) {
         self.calc_moves(player_move);
-        for _ in 0..2 {
-            self.make_moves();
-        }
+        self.make_moves();
         self.collide();
     }
 
@@ -95,10 +93,9 @@ impl Level {
                 None => {}
             }
         }
-        let mut remove_ids = Vec::new();
         let mut ignore_ids = Vec::new();
         for (update_id, update_move) in updates {
-            if remove_ids.contains(&update_id) || ignore_ids.contains(&update_id) {
+            if ignore_ids.contains(&update_id) {
                 continue;
             }
 
@@ -114,13 +111,13 @@ impl Level {
                                 .attractors()
                                 .contains(&move_entity.entity_type)
                             {
-                                remove_ids.push(move_entity_id);
+                                ignore_ids.push(move_entity_id);
                             } else if move_entity
                                 .entity_type
                                 .attractors()
                                 .contains(&entity.entity_type)
                             {
-                                remove_ids.push(update_id);
+                                ignore_ids.push(update_id);
                             } else {
                                 ignore_ids.push(update_id);
                                 ignore_ids.push(move_entity_id);
@@ -133,9 +130,6 @@ impl Level {
 
             let entity = self.entities.get_mut(&update_id).unwrap();
             entity.controller.as_mut().unwrap().next_move = update_move;
-        }
-        for remove_id in remove_ids {
-            self.entities.remove(&remove_id);
         }
     }
 
@@ -251,8 +245,10 @@ impl Level {
                     .contains(&next_entity.entity_type)
                 {
                     return true;
-                } else {
-                    return false;
+                } else if let Some(controller) = &next_entity.controller {
+                    if controller.next_move != Move::Wait {
+                        return true;
+                    }
                 }
             } else {
                 return true;
