@@ -9,6 +9,13 @@ use id::*;
 
 const VIEW_RADIUS: i32 = 3;
 
+#[derive(Serialize, Deserialize, Clone, Copy)]
+pub enum LevelState {
+    Playing,
+    Win,
+    Loss,
+}
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Level {
     #[serde(skip)]
@@ -105,7 +112,7 @@ impl Level {
         }
     }
 
-    fn win_state(&self) -> bool {
+    pub fn get_state(&self) -> LevelState {
         if let Some(player) = self.get_player() {
             let targets = player.entity_type.attractors();
             if targets.len() > 0
@@ -114,10 +121,13 @@ impl Level {
                     .values()
                     .any(|entity| targets.contains(&entity.entity_type))
             {
-                return true;
+                LevelState::Win
+            } else {
+                LevelState::Playing
             }
+        } else {
+            LevelState::Loss
         }
-        false
     }
 
     fn get_player(&self) -> Option<&Entity> {
