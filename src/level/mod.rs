@@ -282,7 +282,7 @@ impl Level {
         avoids: Vec<EntityType>,
         attractors: Vec<EntityType>,
     ) -> Vec2<i32> {
-        if let Some(direction) = self
+        if let Some((avoid_pos, direction)) = self
             .entities
             .values()
             .filter_map(|other| {
@@ -296,7 +296,7 @@ impl Level {
                 None
             })
             .min_by_key(|&(_, distance, _)| distance)
-            .map(|(_, _, direction)| direction)
+            .map(|(avoid_pos, _, direction)| (avoid_pos, direction))
         {
             let direction = -direction;
             let next_pos = entity.position + direction;
@@ -304,11 +304,22 @@ impl Level {
                 direction
             } else {
                 let direction = vec2(-direction.y, direction.x);
-                let next_pos = entity.position + direction;
-                if self.is_empty(next_pos) {
-                    direction
+                let delta = entity.position - avoid_pos;
+                if Vec2::dot(direction, delta) >= 0 {
+                    let next_pos = entity.position + direction;
+                    if self.is_empty(next_pos) {
+                        direction
+                    } else {
+                        -direction
+                    }
                 } else {
-                    -direction
+                    let direction = -direction;
+                    let next_pos = entity.position + direction;
+                    if self.is_empty(next_pos) {
+                        direction
+                    } else {
+                        -direction
+                    }
                 }
             }
         } else if let Some(direction) = self
