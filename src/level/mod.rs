@@ -18,6 +18,7 @@ pub enum LevelState {
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Level {
+    pub name: Option<String>,
     id_generator: IdGenerator,
     pub entities: HashMap<Id, Entity>,
 }
@@ -36,6 +37,7 @@ impl Level {
 
     pub fn empty() -> Self {
         Self {
+            name: None,
             id_generator: IdGenerator::new(),
             entities: HashMap::new(),
         }

@@ -1,7 +1,7 @@
 use super::*;
 
 pub struct LevelRenderer {
-    renderer: Renderer,
+    pub renderer: Renderer,
     assets: Rc<Assets>,
 }
 
@@ -24,6 +24,7 @@ impl LevelRenderer {
                     framebuffer,
                     &camera,
                     Mat4::translate(tile_pos.map(|x| x as f32).extend(0.0)),
+                    Mat4::identity(),
                     &self.assets.grass,
                     Color::WHITE,
                 )
@@ -35,6 +36,7 @@ impl LevelRenderer {
                 framebuffer,
                 &camera,
                 Mat4::translate(entity.position.map(|x| x as f32).extend(0.0)),
+                Mat4::identity(),
                 self.assets.entity(entity.entity_type),
                 Color::WHITE,
             );

@@ -59,6 +59,22 @@ impl geng::State for GameState {
         self.camera.optimize(&self.level);
         self.level_renderer
             .draw(&self.level, &self.camera, framebuffer);
+        let text = self
+            .level
+            .name
+            .as_ref()
+            .map(|name| name.as_str())
+            .unwrap_or("custom level");
+        self.level_renderer.renderer.draw_text(
+            framebuffer,
+            &Camera::new(10.0),
+            text,
+            vec2(0.0, 4.0),
+            0.5,
+            1.0,
+            &self.assets.font,
+            Color::BLACK,
+        );
     }
     fn handle_event(&mut self, event: geng::Event) {
         match event {

@@ -1,1 +1,248 @@
-{"id_generator":{"next_id":32},"entities":{"5":{"position":{"x":1,"y":1},"entity_type":"Bush","controller":null},"20":{"position":{"x":2,"y":5},"entity_type":"Bush","controller":null},"21":{"position":{"x":2,"y":6},"entity_type":"Bush","controller":null},"6":{"position":{"x":1,"y":0},"entity_type":"Bush","controller":null},"7":{"position":{"x":-1,"y":3},"entity_type":"Bush","controller":null},"16":{"position":{"x":2,"y":7},"entity_type":"Bush","controller":null},"3":{"position":{"x":-1,"y":0},"entity_type":"Bush","controller":null},"9":{"position":{"x":-2,"y":4},"entity_type":"Bush","controller":null},"29":{"position":{"x":0,"y":-2},"entity_type":"Bush","controller":null},"24":{"position":{"x":0,"y":0},"entity_type":"Fish","controller":null},"22":{"position":{"x":0,"y":5},"entity_type":"Mouse","controller":{"next_move":"Wait","last_attractor_pos":null,"controller_type":"Mouse"}},"18":{"position":{"x":2,"y":3},"entity_type":"Bush","controller":null},"8":{"position":{"x":-2,"y":3},"entity_type":"Bush","controller":null},"27":{"position":{"x":1,"y":-1},"entity_type":"Bush","controller":null},"1":{"position":{"x":-1,"y":2},"entity_type":"Bush","controller":null},"4":{"position":{"x":1,"y":2},"entity_type":"Bush","controller":null},"30":{"position":{"x":1,"y":-2},"entity_type":"Bush","controller":null},"2":{"position":{"x":-1,"y":1},"entity_type":"Bush","controller":null},"25":{"position":{"x":-1,"y":-1},"entity_type":"Bush","controller":null},"10":{"position":{"x":-2,"y":5},"entity_type":"Bush","controller":null},"17":{"position":{"x":1,"y":3},"entity_type":"Bush","controller":null},"14":{"position":{"x":0,"y":7},"entity_type":"Bush","controller":null},"31":{"position":{"x":0,"y":2},"entity_type":"Cat","controller":{"next_move":"Wait","last_attractor_pos":null,"controller_type":"Player"}},"28":{"position":{"x":-1,"y":-2},"entity_type":"Bush","controller":null},"12":{"position":{"x":-2,"y":7},"entity_type":"Bush","controller":null},"13":{"position":{"x":-1,"y":7},"entity_type":"Bush","controller":null},"19":{"position":{"x":2,"y":4},"entity_type":"Bush","controller":null},"15":{"position":{"x":1,"y":7},"entity_type":"Bush","controller":null},"11":{"position":{"x":-2,"y":6},"entity_type":"Bush","controller":null}}}
+{
+    "name": "eat all",
+    "id_generator": {
+        "next_id": 32
+    },
+    "entities": {
+        "5": {
+            "position": {
+                "x": 1,
+                "y": 1
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "20": {
+            "position": {
+                "x": 2,
+                "y": 5
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "21": {
+            "position": {
+                "x": 2,
+                "y": 6
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "6": {
+            "position": {
+                "x": 1,
+                "y": 0
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "7": {
+            "position": {
+                "x": -1,
+                "y": 3
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "16": {
+            "position": {
+                "x": 2,
+                "y": 7
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "3": {
+            "position": {
+                "x": -1,
+                "y": 0
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "9": {
+            "position": {
+                "x": -2,
+                "y": 4
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "29": {
+            "position": {
+                "x": 0,
+                "y": -2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "24": {
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "entity_type": "Fish",
+            "controller": null
+        },
+        "22": {
+            "position": {
+                "x": 0,
+                "y": 5
+            },
+            "entity_type": "Mouse",
+            "controller": {
+                "next_move": "Wait",
+                "last_attractor_pos": null,
+                "controller_type": "Mouse"
+            }
+        },
+        "18": {
+            "position": {
+                "x": 2,
+                "y": 3
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "8": {
+            "position": {
+                "x": -2,
+                "y": 3
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "27": {
+            "position": {
+                "x": 1,
+                "y": -1
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "1": {
+            "position": {
+                "x": -1,
+                "y": 2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "4": {
+            "position": {
+                "x": 1,
+                "y": 2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "30": {
+            "position": {
+                "x": 1,
+                "y": -2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "2": {
+            "position": {
+                "x": -1,
+                "y": 1
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "25": {
+            "position": {
+                "x": -1,
+                "y": -1
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "10": {
+            "position": {
+                "x": -2,
+                "y": 5
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "17": {
+            "position": {
+                "x": 1,
+                "y": 3
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "14": {
+            "position": {
+                "x": 0,
+                "y": 7
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "31": {
+            "position": {
+                "x": 0,
+                "y": 2
+            },
+            "entity_type": "Cat",
+            "controller": {
+                "next_move": "Wait",
+                "last_attractor_pos": null,
+                "controller_type": "Player"
+            }
+        },
+        "28": {
+            "position": {
+                "x": -1,
+                "y": -2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "12": {
+            "position": {
+                "x": -2,
+                "y": 7
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "13": {
+            "position": {
+                "x": -1,
+                "y": 7
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "19": {
+            "position": {
+                "x": 2,
+                "y": 4
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "15": {
+            "position": {
+                "x": 1,
+                "y": 7
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "11": {
+            "position": {
+                "x": -2,
+                "y": 6
+            },
+            "entity_type": "Bush",
+            "controller": null
+        }
+    }
+}

@@ -41,6 +41,7 @@ impl Renderer {
         framebuffer: &mut ugli::Framebuffer,
         camera: &Camera,
         matrix: Mat4<f32>,
+        texture_matrix: Mat4<f32>,
         texture: &ugli::Texture,
         color: Color<f32>,
     ) {
@@ -50,6 +51,7 @@ impl Renderer {
             ugli::uniforms! {
                 u_model_matrix: matrix,
                 u_texture: texture,
+                u_texture_matrix: texture_matrix,
                 u_color: color,
             },
         );
@@ -64,5 +66,36 @@ impl Renderer {
                 ..default()
             },
         );
+    }
+    pub fn draw_text(
+        &self,
+        framebuffer: &mut ugli::Framebuffer,
+        camera: &Camera,
+        text: &str,
+        pos: Vec2<f32>,
+        align: f32,
+        size: f32,
+        font: &ugli::Texture,
+        color: Color<f32>,
+    ) {
+        let mut x = pos.x - text.len() as f32 * align * size;
+        const CHARS: &str = "abcdefghijklmnopqrstuvwxyz0123456789";
+        for c in text.chars() {
+            if c != ' ' {
+                let idx = CHARS.find(c).unwrap();
+                let ty = idx / 6;
+                let tx = idx % 6;
+                self.draw(
+                    framebuffer,
+                    camera,
+                    Mat4::translate(vec3(x, pos.y, 0.0)) * Mat4::scale_uniform(size),
+                    Mat4::scale_uniform(1.0 / 6.0)
+                        * Mat4::translate(vec3(tx as f32, ty as f32, 0.0)),
+                    font,
+                    color,
+                );
+            }
+            x += size;
+        }
     }
 }
