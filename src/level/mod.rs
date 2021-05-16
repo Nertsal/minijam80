@@ -28,7 +28,9 @@ pub struct Level {
 impl Level {
     pub fn turn(&mut self, player_move: Move) {
         self.calc_moves(player_move);
-        self.make_moves();
+        for _ in 0..2 {
+            self.make_moves();
+        }
         self.collide();
     }
 
@@ -142,7 +144,12 @@ impl Level {
     }
 
     fn make_moves(&mut self) {
-        let entity_ids: Vec<Id> = self.entities.keys().copied().collect();
+        let mut entity_ids = self.entities.iter().collect::<Vec<(&Id, &Entity)>>();
+        entity_ids.sort_by_key(|(_, entity)| (-entity.position.y, entity.position.x));
+        let entity_ids = entity_ids
+            .into_iter()
+            .map(|(&id, _)| id)
+            .collect::<Vec<Id>>();
         for entity_id in entity_ids {
             if let Some(mut entity) = self.entities.get(&entity_id).cloned() {
                 self.move_entity(&mut entity);
@@ -194,6 +201,9 @@ impl Level {
 
     fn move_entity(&mut self, entity: &mut Entity) {
         if let Some(controller) = &entity.controller {
+            if controller.next_move == Move::Wait {
+                return;
+            }
             let direction = controller.next_move.direction();
             let position = entity.position;
             let next_pos = position + direction;
@@ -205,9 +215,11 @@ impl Level {
             };
             if can_move {
                 if self.can_move(position, direction) {
+                    entity.controller.as_mut().unwrap().next_move = Move::Wait;
                     entity.position = next_pos;
                 } else if let Some(last_position) = self.can_push(position, direction) {
                     self.push(position, last_position, direction);
+                    entity.controller.as_mut().unwrap().next_move = Move::Wait;
                     entity.position = next_pos;
                 }
             }
@@ -259,8 +271,7 @@ impl Level {
             .map_or(Some(position), |(_, entity)| {
                 match entity.entity_type.property() {
                     Some(EntityProperty::Pushable) => self.can_push(entity.position, direction),
-                    Some(EntityProperty::Collidable) => None,
-                    _ => Some(position),
+                    _ => None,
                 }
             })
     }
