@@ -71,6 +71,9 @@ pub struct Assets {
     #[asset(path = "levels/level*.json", range = "1..=9")]
     pub levels: Vec<Level>,
     pub font: Texture,
+    pub loss: geng::Sound,
+    pub win: geng::Sound,
+    pub step: geng::Sound,
 }
 
 impl Assets {

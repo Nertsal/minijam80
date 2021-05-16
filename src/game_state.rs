@@ -10,6 +10,7 @@ pub struct GameState {
     level_renderer: LevelRenderer,
     transition: Option<geng::Transition>,
     win_timer: f64,
+    played_final_sound: bool,
 }
 
 impl GameState {
@@ -30,6 +31,7 @@ impl GameState {
             transition: None,
             next_level,
             win_timer: 1.0,
+            played_final_sound: false,
         }
     }
 }
@@ -75,8 +77,20 @@ impl geng::State for GameState {
                     .as_ref()
                     .map(|name| name.as_str())
                     .unwrap_or("custom level"),
-                LevelState::Loss => "f",
-                LevelState::Win => "pog",
+                LevelState::Loss => {
+                    if !self.played_final_sound {
+                        self.assets.loss.play().set_volume(0.5);
+                        self.played_final_sound = true;
+                    }
+                    "f"
+                }
+                LevelState::Win => {
+                    if !self.played_final_sound {
+                        self.assets.win.play().set_volume(0.5);
+                        self.played_final_sound = true;
+                    }
+                    "pog"
+                }
             };
             self.level_renderer.renderer.draw_text(
                 framebuffer,
@@ -148,6 +162,7 @@ impl geng::State for GameState {
         }
         if let Some(player_move) = player_move {
             if self.level.get_state() == LevelState::Playing {
+                self.assets.step.play().set_volume(0.5);
                 self.level.turn(player_move);
             }
         }
