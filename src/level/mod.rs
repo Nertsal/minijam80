@@ -62,7 +62,7 @@ impl Level {
         old_entity
     }
 
-    fn get_entity(&self, position: Vec2<i32>) -> Option<(&Id, &Entity)> {
+    pub fn get_entity(&self, position: Vec2<i32>) -> Option<(&Id, &Entity)> {
         self.entities
             .iter()
             .find(|(_, entity)| entity.position == position)

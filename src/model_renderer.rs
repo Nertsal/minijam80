@@ -2,6 +2,7 @@ use super::*;
 
 pub struct LevelRenderer {
     pub renderer: Renderer,
+    noise: noise::OpenSimplex,
     assets: Rc<Assets>,
 }
 
@@ -10,6 +11,7 @@ impl LevelRenderer {
         Self {
             renderer: Renderer::new(geng),
             assets: assets.clone(),
+            noise: noise::OpenSimplex::new(),
         }
     }
     pub fn draw(&self, level: &Level, camera: &Camera, framebuffer: &mut ugli::Framebuffer) {
@@ -27,7 +29,24 @@ impl LevelRenderer {
                     Mat4::identity(),
                     &self.assets.grass,
                     Color::WHITE,
-                )
+                );
+                if true || level.get_entity(tile_pos).is_none() {
+                    let nv = noise::NoiseFn::get(&self.noise, [x as f64 + 0.5, y as f64 + 0.5]);
+                    let nv = nv / 0.55;
+                    let mx = self.assets.flower.len() as i32 + 10;
+                    let idx = clamp(((nv + 1.0) / 2.0 * mx as f64) as i32, 0..=mx);
+                    if let Some(texture) = self.assets.flower.get(idx as usize) {
+                        self.renderer.draw(
+                            framebuffer,
+                            &camera,
+                            Mat4::translate(tile_pos.map(|x| x as f32).extend(0.0)),
+                            // * Mat4::scale_uniform(0.3),
+                            Mat4::identity(),
+                            texture,
+                            Color::WHITE,
+                        );
+                    }
+                }
             }
         }
 
