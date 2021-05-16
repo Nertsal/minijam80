@@ -76,7 +76,7 @@ impl Level {
                 check_tiles.push(position.map(|x| x.floor() as i32));
             }
         } else {
-            check_tiles.push(position.map(|x| x.floor() as i32));
+            check_tiles.push(position.map(|x| x.round() as i32));
         }
         check_tiles
     }
