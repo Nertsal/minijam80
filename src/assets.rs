@@ -59,3 +59,20 @@ pub struct Assets {
     pub wall: Texture,
     pub water: Texture,
 }
+
+impl Assets {
+    pub fn entity(&self, entity: EntityType) -> &ugli::Texture {
+        match entity {
+            EntityType::Bush => &self.bush,
+            EntityType::Doghouse => &self.doghouse,
+            EntityType::Cat => &self.cat,
+            EntityType::Dog => &self.dog,
+            EntityType::Mouse => &self.mouse,
+            EntityType::Box => &self.box_asset,
+            EntityType::Cheese => &self.cheese,
+            EntityType::Fence => &self.fence,
+            EntityType::Wall => &self.wall,
+            EntityType::Water => &self.water,
+        }
+    }
+}

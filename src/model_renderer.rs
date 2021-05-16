@@ -35,18 +35,7 @@ impl LevelRenderer {
                 framebuffer,
                 &camera,
                 Mat4::translate(entity.position.map(|x| x as f32).extend(0.0)),
-                match &entity.entity_type {
-                    level::EntityType::Bush => &self.assets.bush,
-                    level::EntityType::Doghouse => &self.assets.doghouse,
-                    level::EntityType::Cat => &self.assets.cat,
-                    level::EntityType::Dog => &self.assets.dog,
-                    level::EntityType::Mouse => &self.assets.mouse,
-                    level::EntityType::Box => &self.assets.box_asset,
-                    level::EntityType::Cheese => &self.assets.cheese,
-                    level::EntityType::Fence => &self.assets.fence,
-                    level::EntityType::Wall => &self.assets.wall,
-                    level::EntityType::Water => &self.assets.water,
-                },
+                self.assets.entity(entity.entity_type),
                 Color::WHITE,
             );
         }

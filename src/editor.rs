@@ -63,6 +63,8 @@ impl Editor {
     }
 }
 
+const BUTTON_SIZE: f32 = 32.0;
+
 impl geng::State for Editor {
     fn update(&mut self, delta_time: f64) {}
     fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
@@ -76,13 +78,41 @@ impl geng::State for Editor {
             32.0,
             Color::BLACK,
         );
+        for (idx, entity) in EntityType::into_enum_iter().enumerate() {
+            self.geng.draw_2d().textured_quad(
+                framebuffer,
+                AABB::pos_size(
+                    vec2(idx as f32 * BUTTON_SIZE, BUTTON_SIZE),
+                    vec2(BUTTON_SIZE, BUTTON_SIZE),
+                ),
+                self.assets.entity(entity),
+                Color::WHITE,
+            );
+        }
     }
     fn handle_event(&mut self, event: geng::Event) {
         match event {
             geng::Event::MouseDown {
                 position,
                 button: geng::MouseButton::Left,
-            } => self.spawn_selected(position, false),
+            } => {
+                for (idx, entity) in EntityType::into_enum_iter().enumerate() {
+                    if AABB::pos_size(
+                        vec2(idx as f32 * BUTTON_SIZE, BUTTON_SIZE),
+                        vec2(BUTTON_SIZE, BUTTON_SIZE),
+                    )
+                    .contains(position.map(|x| x as f32))
+                    {
+                        if self.selected_entity == Some(entity) {
+                            self.selected_entity = None;
+                        } else {
+                            self.selected_entity = Some(entity);
+                        }
+                        return;
+                    }
+                }
+                self.spawn_selected(position, false)
+            }
             geng::Event::MouseDown {
                 position,
                 button: geng::MouseButton::Right,
