@@ -169,6 +169,7 @@ impl geng::State for GameState {
                     }
                     match key {
                         geng::Key::Q => self.model.next_level(),
+                        geng::Key::R => self.model.reset_level(),
                         _ => (),
                     }
                 }
@@ -200,7 +201,7 @@ impl geng::State for GameState {
             },
         }
 
-        if let geng::Event::KeyDown { key: geng::Key::R } = event {
+        if let geng::Event::KeyDown { key: geng::Key::G } = event {
             self.model.mode = match self.model.mode {
                 Mode::Edit => Mode::Play,
                 Mode::Play => Mode::Edit,

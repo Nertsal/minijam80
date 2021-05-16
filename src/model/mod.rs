@@ -19,10 +19,12 @@ pub struct Model {
 
 impl Model {
     pub fn new() -> Self {
-        Self {
+        let mut model = Self {
             mode: Mode::Play,
-            level: Some(Level::load("levels/custom/custom_level.json").unwrap()),
-        }
+            level: None,
+        };
+        model.load_level("levels/custom/custom_level.json");
+        model
     }
 
     pub fn update(&mut self, delta_time: f32) {}
@@ -58,11 +60,13 @@ impl Model {
     }
 
     pub fn load_level(&mut self, level_path: impl AsRef<std::path::Path>) {
-        self.level = match Level::load(level_path) {
-            Ok(level) => Some(level),
+        match Level::load(&level_path) {
+            Ok(mut level) => {
+                level.path = level_path.as_ref().to_str().unwrap().to_owned();
+                self.level = Some(level);
+            }
             Err(err) => {
                 println!("Error loading level: {:?}", err);
-                None
             }
         };
     }
@@ -72,6 +76,13 @@ impl Model {
             if let Some(level_name) = level.next_level.clone() {
                 self.load_level(level_name);
             }
+        }
+    }
+
+    pub fn reset_level(&mut self) {
+        if let Some(level) = &self.level {
+            let path = level.path.clone();
+            self.load_level(path);
         }
     }
 }

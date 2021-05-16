@@ -6,6 +6,8 @@ const VIEW_RADIUS: i32 = 3;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Level {
+    #[serde(skip)]
+    pub path: String,
     pub next_level: Option<String>,
     pub entities: Vec<Entity>,
 }
@@ -13,6 +15,7 @@ pub struct Level {
 impl Level {
     pub fn empty() -> Self {
         Self {
+            path: "".to_owned(),
             next_level: None,
             entities: vec![],
         }
