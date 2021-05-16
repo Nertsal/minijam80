@@ -35,7 +35,7 @@ impl LevelRenderer {
             self.renderer.draw(
                 framebuffer,
                 &camera,
-                Mat4::translate(entity.position.map(|x| x as f32).extend(0.0)),
+                Mat4::translate(entity.render_pos.extend(0.0)),
                 Mat4::identity(),
                 self.assets.entity(entity.entity_type),
                 Color::WHITE,

@@ -54,6 +54,10 @@ impl geng::State for GameState {
                 self.transition = Some(geng::Transition::Pop);
             }
         }
+        for entity in self.level.entities.values_mut() {
+            entity.render_pos += (entity.position.map(|x| x as f32) - entity.render_pos)
+                .clamp(delta_time as f32 * 10.0);
+        }
     }
     fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
         self.camera.optimize(&self.level);

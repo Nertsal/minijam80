@@ -35,6 +35,7 @@ impl Editor {
             Some(selected_entity) => {
                 self.level.set_entity(Entity {
                     position: tile_pos,
+                    render_pos: tile_pos.map(|x| x as f32),
                     entity_type: selected_entity,
                     controller: if spawn_player {
                         Some(EntityController {

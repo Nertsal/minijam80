@@ -1,8 +1,14 @@
 use super::*;
 
+fn zero() -> Vec2<f32> {
+    vec2(0.0, 0.0)
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Entity {
     pub position: Vec2<i32>,
+    #[serde(default = "zero", skip)]
+    pub render_pos: Vec2<f32>,
     pub entity_type: EntityType,
     pub controller: Option<EntityController>,
 }
