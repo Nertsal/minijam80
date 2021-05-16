@@ -363,7 +363,7 @@ impl Level {
         {
             let direction = -direction;
             let next_pos = entity.position + direction;
-            return if self.is_empty(next_pos) {
+            let direction = if self.is_empty(next_pos) {
                 direction
             } else {
                 let direction = vec2(-direction.y, direction.x);
@@ -384,6 +384,14 @@ impl Level {
                         -direction
                     }
                 }
+            };
+            let next_pos = entity.position + direction;
+            return if position_distance(entity.position, avoid_pos)
+                > position_distance(next_pos, avoid_pos)
+            {
+                vec2(0, 0)
+            } else {
+                direction
             };
         } else if let Some((attractor_pos, direction)) = self
             .entities
