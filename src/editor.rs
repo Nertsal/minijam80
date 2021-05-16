@@ -98,17 +98,21 @@ impl geng::State for Editor {
                 geng::Key::Num5 => self.selected_entity = Some(EntityType::Mouse),
                 geng::Key::Num6 => self.selected_entity = Some(EntityType::Box),
                 geng::Key::Num7 => self.selected_entity = Some(EntityType::Cheese),
-                geng::Key::S => {
-                    if self.geng.window().is_key_pressed(geng::Key::LCtrl) {
-                        batbox::save_file(
-                            "Save custom level",
-                            "levels/custom/custom_level.json",
-                            |writer| {
-                                serde_json::to_writer(writer, &self.level)?;
-                                Ok(())
-                            },
-                        )
-                        .unwrap();
+                geng::Key::S if self.geng.window().is_key_pressed(geng::Key::LCtrl) => {
+                    batbox::save_file(
+                        "Save custom level",
+                        "levels/custom/custom_level.json",
+                        |writer| {
+                            serde_json::to_writer(writer, &self.level)?;
+                            Ok(())
+                        },
+                    )
+                    .unwrap();
+                }
+                geng::Key::O if self.geng.window().is_key_pressed(geng::Key::LCtrl) => {
+                    if let Some(path) = batbox::select_file("Load level") {
+                        self.level =
+                            serde_json::from_reader(std::fs::File::open(path).unwrap()).unwrap();
                     }
                 }
                 geng::Key::R => {
