@@ -4,25 +4,15 @@ mod entity;
 mod level;
 
 pub use entity::*;
-use level::*;
-
-#[derive(Clone, Copy)]
-pub enum Mode {
-    Play,
-    Edit,
-}
+pub use level::*;
 
 pub struct Model {
-    pub mode: Mode,
     pub level: Option<Level>,
 }
 
 impl Model {
     pub fn new() -> Self {
-        let mut model = Self {
-            mode: Mode::Play,
-            level: None,
-        };
+        let mut model = Self { level: None };
         model.load_level("levels/custom/custom_level.json");
         model
     }
@@ -48,15 +38,6 @@ impl Model {
     }
 
     pub fn save_level(&self) {
-        batbox::save_file(
-            "Save custom level",
-            "levels/custom/custom_level.json",
-            |writer| {
-                serde_json::to_writer(writer, self.level.as_ref().unwrap())?;
-                Ok(())
-            },
-        )
-        .unwrap();
     }
 
     pub fn load_level(&mut self, level_path: impl AsRef<std::path::Path>) {

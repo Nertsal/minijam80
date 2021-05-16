@@ -1,0 +1,61 @@
+use super::*;
+
+#[derive(Deref)]
+pub struct Texture {
+    #[deref]
+    inner: ugli::Texture,
+}
+
+impl geng::LoadAsset for Texture {
+    fn load(geng: &Rc<Geng>, path: &str) -> geng::AssetFuture<Self> {
+        let geng = geng.clone();
+        <ugli::Texture as geng::LoadAsset>::load(&geng, path)
+            .map(move |data| {
+                let mut data = data?;
+                data.set_filter(ugli::Filter::Nearest);
+                Ok(Self { inner: data })
+            })
+            .boxed_local()
+    }
+
+    const DEFAULT_EXT: Option<&'static str> = Some("png");
+}
+
+#[derive(Deref)]
+pub struct Font {
+    #[deref]
+    inner: Rc<geng::Font>,
+}
+
+impl geng::LoadAsset for Font {
+    fn load(geng: &Rc<Geng>, path: &str) -> geng::AssetFuture<Self> {
+        let geng = geng.clone();
+        <Vec<u8> as geng::LoadAsset>::load(&geng, path)
+            .map(move |data| {
+                Ok(Font {
+                    inner: Rc::new(geng::Font::new(&geng, data?)?),
+                })
+            })
+            .boxed_local()
+    }
+    const DEFAULT_EXT: Option<&'static str> = Some("ttf");
+}
+
+#[derive(geng::Assets)]
+pub struct Assets {
+    pub cat: Texture,
+    pub mouse: Texture,
+    pub dog: Texture,
+    pub grass: Texture,
+    pub bush: Texture,
+    #[asset(path = "flower*.png", range = "1..=3")]
+    pub flower: Vec<Texture>,
+    pub bone: Texture,
+    #[asset(path = "box.png")]
+    pub box_asset: Texture,
+    pub cheese: Texture,
+    pub doghouse: Texture,
+    pub fence: Texture,
+    pub wall: Texture,
+    pub water: Texture,
+}

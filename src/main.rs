@@ -1,14 +1,24 @@
 use geng::prelude::*;
 
+mod assets;
 mod camera;
-mod model;
-mod renderer;
+mod editor;
 mod game_state;
+mod model;
+mod model_renderer;
+mod renderer;
 
-use game_state::*;
+use assets::*;
 use camera::*;
+use editor::*;
+use game_state::*;
 use model::*;
+use model_renderer::*;
 use renderer::*;
+
+fn tile_pos(pos: Vec2<f32>) -> Vec2<i32> {
+    pos.map(|x| x.floor() as i32)
+}
 
 fn main() {
     geng::setup_panic_handler();
@@ -30,7 +40,7 @@ fn main() {
             let geng = geng.clone();
             move |assets| {
                 let assets = assets.unwrap();
-                GameState::new(&geng, &Rc::new(assets))
+                Editor::new(&geng, &Rc::new(assets))
             }
         }),
     );
