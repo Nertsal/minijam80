@@ -61,6 +61,7 @@ pub enum EntityType {
     Fence,
     Wall,
     Water,
+    Fish,
 }
 
 impl EntityType {
@@ -76,7 +77,7 @@ impl EntityType {
     pub fn attractors(&self) -> Vec<Self> {
         use EntityType::*;
         match self {
-            Cat => vec![Mouse],
+            Cat => vec![Mouse, Fish],
             Dog => vec![Cat, Bone],
             Mouse => vec![Cheese],
             _ => vec![],

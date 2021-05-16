@@ -58,6 +58,7 @@ pub struct Assets {
     pub fence: Texture,
     pub wall: Texture,
     pub water: Texture,
+    pub fish: Texture,
 }
 
 impl Assets {
@@ -74,6 +75,7 @@ impl Assets {
             EntityType::Wall => &self.wall,
             EntityType::Water => &self.water,
             EntityType::Bone => &self.bone,
+            EntityType::Fish => &self.fish,
         }
     }
 }
