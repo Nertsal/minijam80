@@ -1,6 +1,9 @@
 use super::*;
 
+mod entity;
 mod pathfind;
+
+pub use entity::*;
 
 const VIEW_RADIUS: i32 = 3;
 
@@ -13,6 +16,11 @@ pub struct Level {
 }
 
 impl Level {
+    pub fn turn(&mut self, player_move: Move) {
+        self.calc_moves(player_move);
+        self.make_moves();
+    }
+
     pub fn empty() -> Self {
         Self {
             path: "".to_owned(),
@@ -21,7 +29,7 @@ impl Level {
         }
     }
 
-    pub fn load(path: impl AsRef<std::path::Path>) -> std::io::Result<Self> {
+    fn load(path: impl AsRef<std::path::Path>) -> std::io::Result<Self> {
         Ok(serde_json::from_reader(std::io::BufReader::new(
             std::fs::File::open(path)?,
         ))?)
@@ -47,16 +55,10 @@ impl Level {
         old_entity
     }
 
-    pub fn get_entity(&self, position: Vec2<i32>) -> Option<&Entity> {
+    fn get_entity(&self, position: Vec2<i32>) -> Option<&Entity> {
         self.entities
             .iter()
             .find(|entity| entity.position == position)
-    }
-
-    pub fn turn(&mut self, player_move: Move) -> bool {
-        self.calc_moves(player_move);
-        self.make_moves();
-        self.win_state()
     }
 
     fn calc_moves(&mut self, player_move: Move) {

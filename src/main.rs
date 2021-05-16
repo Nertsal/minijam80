@@ -4,7 +4,7 @@ mod assets;
 mod camera;
 mod editor;
 mod game_state;
-mod model;
+mod level;
 mod model_renderer;
 mod renderer;
 
@@ -12,7 +12,7 @@ use assets::*;
 use camera::*;
 use editor::*;
 use game_state::*;
-use model::*;
+use level::*;
 use model_renderer::*;
 use renderer::*;
 
