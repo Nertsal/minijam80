@@ -101,6 +101,7 @@ pub enum EntityProperty {
 #[derive(Serialize, Deserialize, Clone)]
 pub struct EntityController {
     pub next_move: Move,
+    pub last_attractor_pos: Option<Vec2<i32>>,
     pub controller_type: ControllerType,
 }
 
@@ -115,6 +116,7 @@ impl EntityController {
         }
         .map(|controller_type| Self {
             next_move: Move::Wait,
+            last_attractor_pos: None,
             controller_type,
         })
     }

@@ -39,6 +39,7 @@ impl Editor {
                     controller: if spawn_player {
                         Some(EntityController {
                             next_move: Move::Wait,
+                            last_attractor_pos: None,
                             controller_type: ControllerType::Player,
                         })
                     } else {

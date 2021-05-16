@@ -74,17 +74,18 @@ impl Level {
 
     fn calc_moves(&mut self, player_move: Move) {
         let mut updates = HashMap::new();
-        for (&entity_id, entity) in self.entities.iter() {
+        let ids: Vec<Id> = self.entities.keys().copied().collect();
+        for entity_id in ids {
+            let entity = self.entities.get(&entity_id).unwrap();
             match &entity.controller {
                 Some(controller) => {
                     let direction = match controller.controller_type {
                         ControllerType::Player => player_move.direction(),
-                        _ => self.get_move_direction(
-                            entity,
-                            VIEW_RADIUS,
-                            entity.entity_type.enemies(),
-                            entity.entity_type.attractors(),
-                        ),
+                        _ => {
+                            let enemies = entity.entity_type.enemies();
+                            let attractors = entity.entity_type.attractors();
+                            self.get_move_direction(entity_id, VIEW_RADIUS, enemies, attractors)
+                        }
                     };
                     let next_move = Move::from_direction(direction).unwrap_or(Move::Wait);
                     updates.insert(entity_id, next_move);
@@ -276,12 +277,13 @@ impl Level {
     }
 
     fn get_move_direction(
-        &self,
-        entity: &Entity,
+        &mut self,
+        entity_id: Id,
         view_radius: i32,
         avoids: Vec<EntityType>,
         attractors: Vec<EntityType>,
     ) -> Vec2<i32> {
+        let entity = self.entities.get(&entity_id).unwrap();
         if let Some((avoid_pos, direction)) = self
             .entities
             .values()
@@ -300,7 +302,7 @@ impl Level {
         {
             let direction = -direction;
             let next_pos = entity.position + direction;
-            if self.is_empty(next_pos) {
+            return if self.is_empty(next_pos) {
                 direction
             } else {
                 let direction = vec2(-direction.y, direction.x);
@@ -321,8 +323,8 @@ impl Level {
                         -direction
                     }
                 }
-            }
-        } else if let Some(direction) = self
+            };
+        } else if let Some((attractor_pos, direction)) = self
             .entities
             .values()
             .filter_map(|other| {
@@ -336,12 +338,28 @@ impl Level {
                 None
             })
             .min_by_key(|&(_, distance, _)| distance)
-            .map(|(_, _, direction)| direction)
+            .map(|(attractor_pos, _, direction)| (attractor_pos, direction))
         {
-            direction
-        } else {
-            vec2(0, 0)
+            let entity = self.entities.get_mut(&entity_id).unwrap();
+            if let Some(controller) = &mut entity.controller {
+                controller.last_attractor_pos = Some(attractor_pos);
+            }
+            return direction;
+        } else if let Some(controller) = &entity.controller {
+            if let Some(last_attractor_pos) = controller.last_attractor_pos {
+                println!("Some");
+                if let Some(direction) =
+                    self.pathfind(entity.position, last_attractor_pos, VIEW_RADIUS * 2)
+                {
+                    if direction != vec2(0, 0) {
+                        return direction;
+                    }
+                }
+                let entity = self.entities.get_mut(&entity_id).unwrap();
+                entity.controller.as_mut().unwrap().last_attractor_pos = None;
+            }
         }
+        vec2(0, 0)
     }
 
     fn is_empty(&self, position: Vec2<i32>) -> bool {

@@ -14,9 +14,12 @@ impl Level {
             }
             for dx in -1..=1 {
                 for dy in -1..=1 {
+                    if dx != 0 && dy != 0 {
+                        continue;
+                    }
                     let next = pos + vec2(dx, dy);
                     if next == from {
-                        return Some(pos);
+                        return Some(pos - from);
                     }
                     if !used.contains(&next) {
                         let entity = self.get_entity(next);
