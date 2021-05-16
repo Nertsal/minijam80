@@ -60,10 +60,10 @@ impl Level {
         old_entity
     }
 
-    fn get_entity(&self, position: Vec2<i32>) -> Option<&Entity> {
+    fn get_entity(&self, position: Vec2<i32>) -> Option<(&Id, &Entity)> {
         self.entities
-            .values()
-            .find(|entity| entity.position == position)
+            .iter()
+            .find(|(_, entity)| entity.position == position)
     }
 
     fn get_entity_mut(&mut self, position: Vec2<i32>) -> Option<&mut Entity> {
@@ -92,13 +92,51 @@ impl Level {
                 None => {}
             }
         }
+        let mut remove_ids = Vec::new();
+        let mut ignore_ids = Vec::new();
         for (update_id, update_move) in updates {
+            if remove_ids.contains(&update_id) || ignore_ids.contains(&update_id) {
+                continue;
+            }
+
+            if update_move != Move::Wait {
+                let entity = self.entities.get(&update_id).unwrap();
+                let move_pos = entity.position + update_move.direction();
+                if let Some((&move_entity_id, move_entity)) = self.get_entity(move_pos) {
+                    if let Some(controller) = &move_entity.controller {
+                        if controller.next_move.direction() == -update_move.direction() {
+                            // Two units try to move through each other
+                            if entity
+                                .entity_type
+                                .attractors()
+                                .contains(&move_entity.entity_type)
+                            {
+                                remove_ids.push(move_entity_id);
+                            } else if move_entity
+                                .entity_type
+                                .attractors()
+                                .contains(&entity.entity_type)
+                            {
+                                remove_ids.push(update_id);
+                            } else {
+                                ignore_ids.push(update_id);
+                                ignore_ids.push(move_entity_id);
+                            }
+                            continue;
+                        }
+                    }
+                }
+            }
+
             let entity = self.entities.get_mut(&update_id).unwrap();
             if let Some(controller) = &mut entity.controller {
                 controller.next_move = update_move;
             } else {
                 unreachable!()
             }
+        }
+        for remove_id in remove_ids {
+            self.entities.remove(&remove_id);
         }
     }
 
@@ -195,9 +233,9 @@ impl Level {
     }
 
     fn can_move(&self, position: Vec2<i32>, direction: Vec2<i32>) -> bool {
-        if let Some(entity) = self.get_entity(position) {
+        if let Some((_, entity)) = self.get_entity(position) {
             let next_pos = position + direction;
-            if let Some(next_entity) = self.get_entity(next_pos) {
+            if let Some((_, next_entity)) = self.get_entity(next_pos) {
                 if entity
                     .entity_type
                     .attractors()
@@ -216,13 +254,14 @@ impl Level {
 
     fn can_push(&self, position: Vec2<i32>, direction: Vec2<i32>) -> Option<Vec2<i32>> {
         let next_pos = position + direction;
-        self.get_entity(next_pos).map_or(Some(position), |entity| {
-            match entity.entity_type.property() {
-                Some(EntityProperty::Pushable) => self.can_push(entity.position, direction),
-                Some(EntityProperty::Collidable) => None,
-                _ => Some(position),
-            }
-        })
+        self.get_entity(next_pos)
+            .map_or(Some(position), |(_, entity)| {
+                match entity.entity_type.property() {
+                    Some(EntityProperty::Pushable) => self.can_push(entity.position, direction),
+                    Some(EntityProperty::Collidable) => None,
+                    _ => Some(position),
+                }
+            })
     }
 
     fn push(&mut self, origin: Vec2<i32>, last_position: Vec2<i32>, direction: Vec2<i32>) {

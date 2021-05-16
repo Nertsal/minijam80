@@ -17,7 +17,7 @@ pub fn position_distance(pos1: Vec2<i32>, pos2: Vec2<i32>) -> i32 {
     (pos1.x - pos2.x).abs() + (pos1.y - pos2.y).abs()
 }
 
-#[derive(Serialize, Deserialize, Clone, Copy)]
+#[derive(Serialize, Deserialize, Clone, Copy, PartialEq)]
 pub enum Move {
     Wait,
     Up,
