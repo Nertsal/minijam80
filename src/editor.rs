@@ -68,7 +68,11 @@ impl Editor {
 const BUTTON_SIZE: f32 = 32.0;
 
 impl geng::State for Editor {
-    fn update(&mut self, delta_time: f64) {}
+    fn update(&mut self, delta_time: f64) {
+        for entity in self.level.entities.values_mut() {
+            entity.render_pos = entity.position.map(|x| x as f32);
+        }
+    }
     fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
         self.framebuffer_size = framebuffer.size();
         self.camera.optimize(&self.level);
