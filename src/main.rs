@@ -54,7 +54,10 @@ fn main() {
             }
         }
     }
-    let geng = Rc::new(Geng::new(default()));
+    let geng = Rc::new(Geng::new(geng::ContextOptions {
+        title: "Cats, mice, and 8 pixels".to_owned(),
+        ..default()
+    }));
     let assets = <Assets as geng::LoadAsset>::load(&geng, ".");
     geng::run(
         geng.clone(),
