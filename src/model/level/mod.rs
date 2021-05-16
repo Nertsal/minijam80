@@ -46,30 +46,6 @@ impl Level {
             .find(|entity| entity.position == position)
     }
 
-    pub fn get_player_mut(&mut self) -> Option<&mut Entity> {
-        if let Some(i) = self
-            .entities
-            .iter()
-            .enumerate()
-            .find(|(_, creature)| {
-                if let Some(EntityController {
-                    controller_type: ControllerType::Player,
-                    ..
-                }) = creature.controller
-                {
-                    true
-                } else {
-                    false
-                }
-            })
-            .map(|(i, _)| i)
-        {
-            self.entities.get_mut(i)
-        } else {
-            None
-        }
-    }
-
     pub fn turn(&mut self, player_move: Move) {
         self.calc_moves(player_move);
         self.make_moves();
@@ -134,7 +110,7 @@ impl Level {
                 } => position_distance(next_pos, *origin) <= *distance,
                 _ => true,
             };
-            if can_move && self.get_entity(next_pos).is_none() {
+            if can_move && self.is_empty(next_pos) {
                 entity.position = next_pos;
             }
         }
@@ -163,7 +139,19 @@ impl Level {
             .min_by_key(|&(_, distance, _)| distance)
             .map(|(_, _, direction)| direction)
         {
-            -direction
+            let direction = -direction;
+            let next_pos = entity.position + direction;
+            if self.is_empty(next_pos) {
+                direction
+            } else {
+                let direction = vec2(-direction.y, direction.x);
+                let next_pos = entity.position + direction;
+                if self.is_empty(next_pos) {
+                    direction
+                } else {
+                    -direction
+                }
+            }
         } else if let Some(direction) = self
             .entities
             .iter()
@@ -180,9 +168,13 @@ impl Level {
             .min_by_key(|&(_, distance, _)| distance)
             .map(|(_, _, direction)| direction)
         {
-            dbg!(direction)
+            direction
         } else {
             vec2(0, 0)
         }
+    }
+
+    fn is_empty(&self, position: Vec2<i32>) -> bool {
+        self.get_entity(position).is_none()
     }
 }

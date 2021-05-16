@@ -42,24 +42,39 @@ impl Level {
         }
         let delta = (other.position - entity.position).map(|x| x as f32);
         let origin = entity.position.map(|x| x as f32);
-        let mut direction = None;
+        let mut direction = if distance == 1 {
+            Some(other.position - entity.position)
+        } else {
+            None
+        };
         for i in 1..distance {
             let check_pos = origin + delta * i as f32 / distance as f32;
-            for check_tile in Self::get_tiles(check_pos) {
-                if self.get_entity(check_tile).is_some() {
-                    return None;
-                } else if i == 1 {
-                    direction = Some(check_tile - entity.position);
+            let mut empty = false;
+            for check_tile in Self::get_tiles(check_pos, delta) {
+                if self.is_empty(check_tile) {
+                    empty = true;
+                    if i == 1 {
+                        direction = Some(check_tile - entity.position);
+                    }
+                    break;
                 }
+            }
+            if !empty {
+                return None;
             }
         }
         direction
     }
-    pub fn get_tiles(position: Vec2<f32>) -> Vec<Vec2<i32>> {
+    fn get_tiles(position: Vec2<f32>, delta: Vec2<f32>) -> Vec<Vec2<i32>> {
         let mut check_tiles = Vec::new();
         if position.x.fract().abs() == 0.5 && position.y.fract().abs() == 0.5 {
-            check_tiles.push(vec2(position.x.ceil() as i32, position.y.floor() as i32));
-            check_tiles.push(vec2(position.x.floor() as i32, position.y.ceil() as i32));
+            if delta.x * delta.y > 0.0 {
+                check_tiles.push(vec2(position.x.ceil() as i32, position.y.floor() as i32));
+                check_tiles.push(vec2(position.x.floor() as i32, position.y.ceil() as i32));
+            } else {
+                check_tiles.push(position.map(|x| x.ceil() as i32));
+                check_tiles.push(position.map(|x| x.floor() as i32));
+            }
         } else {
             check_tiles.push(position.map(|x| x.floor() as i32));
         }
