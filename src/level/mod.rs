@@ -132,11 +132,7 @@ impl Level {
             }
 
             let entity = self.entities.get_mut(&update_id).unwrap();
-            if let Some(controller) = &mut entity.controller {
-                controller.next_move = update_move;
-            } else {
-                unreachable!()
-            }
+            entity.controller.as_mut().unwrap().next_move = update_move;
         }
         for remove_id in remove_ids {
             self.entities.remove(&remove_id);
