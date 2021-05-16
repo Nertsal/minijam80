@@ -68,7 +68,7 @@ pub struct Assets {
     pub wall: Texture,
     pub water: Texture,
     pub fish: Texture,
-    #[asset(path = "levels/level*.json", range = "1..=3")]
+    #[asset(path = "levels/level*.json", range = "1..=6")]
     pub levels: Vec<Level>,
 }
 
