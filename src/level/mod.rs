@@ -347,7 +347,6 @@ impl Level {
             return direction;
         } else if let Some(controller) = &entity.controller {
             if let Some(last_attractor_pos) = controller.last_attractor_pos {
-                println!("Some");
                 if let Some(direction) =
                     self.pathfind(entity.position, last_attractor_pos, VIEW_RADIUS * 2)
                 {
