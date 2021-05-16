@@ -73,6 +73,7 @@ impl Assets {
             EntityType::Fence => &self.fence,
             EntityType::Wall => &self.wall,
             EntityType::Water => &self.water,
+            EntityType::Bone => &self.bone,
         }
     }
 }

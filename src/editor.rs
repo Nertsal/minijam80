@@ -128,6 +128,7 @@ impl geng::State for Editor {
                 geng::Key::Num5 => self.selected_entity = Some(EntityType::Mouse),
                 geng::Key::Num6 => self.selected_entity = Some(EntityType::Box),
                 geng::Key::Num7 => self.selected_entity = Some(EntityType::Cheese),
+                geng::Key::Num8 => self.selected_entity = Some(EntityType::Bone),
                 geng::Key::S if self.geng.window().is_key_pressed(geng::Key::LCtrl) => {
                     batbox::save_file(
                         "Save custom level",
