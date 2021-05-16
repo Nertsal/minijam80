@@ -53,9 +53,10 @@ impl Level {
             .find(|entity| entity.position == position)
     }
 
-    pub fn turn(&mut self, player_move: Move) {
+    pub fn turn(&mut self, player_move: Move) -> bool {
         self.calc_moves(player_move);
         self.make_moves();
+        self.win_state()
     }
 
     fn calc_moves(&mut self, player_move: Move) {
@@ -106,6 +107,39 @@ impl Level {
             self.move_entity(&mut entity);
             *self.entities.get_mut(entity_index).unwrap() = entity;
         }
+    }
+
+    fn win_state(&self) -> bool {
+        if let Some(player) = self.get_player() {
+            if let Some(target_type) = match player.entity_type {
+                EntityType::Cat => Some(EntityType::Mouse),
+                EntityType::Dog => Some(EntityType::Cat),
+                _ => None,
+            } {
+                if !self
+                    .entities
+                    .iter()
+                    .any(|entity| entity.entity_type == target_type)
+                {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
+    fn get_player(&self) -> Option<&Entity> {
+        self.entities.iter().find(|entity| {
+            if let Some(EntityController {
+                controller_type: ControllerType::Player,
+                ..
+            }) = &entity.controller
+            {
+                true
+            } else {
+                false
+            }
+        })
     }
 
     fn move_entity(&mut self, entity: &mut Entity) {
