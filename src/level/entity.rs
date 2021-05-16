@@ -57,6 +57,7 @@ pub enum EntityType {
     Doghouse,
     Box,
     Cheese,
+    Bone,
     Fence,
     Wall,
     Water,
@@ -66,26 +67,26 @@ impl EntityType {
     pub fn enemies(&self) -> Vec<Self> {
         use EntityType::*;
         match self {
-            Bush | Doghouse | Box | Cheese | Fence | Wall | Water => vec![],
             Cat => vec![Dog],
             Dog => vec![],
             Mouse => vec![Cat],
+            _ => vec![],
         }
     }
     pub fn attractors(&self) -> Vec<Self> {
         use EntityType::*;
         match self {
-            Bush | Doghouse | Box | Cheese | Fence | Wall | Water => vec![],
             Cat => vec![Mouse],
-            Dog => vec![Cat],
+            Dog => vec![Cat, Bone],
             Mouse => vec![Cheese],
+            _ => vec![],
         }
     }
     pub fn property(&self) -> Option<EntityProperty> {
         use EntityType::*;
         match self {
             Bush | Doghouse | Fence | Wall | Water => Some(EntityProperty::Collidable),
-            Box | Cheese => Some(EntityProperty::Pushable),
+            Box | Cheese | Bone => Some(EntityProperty::Pushable),
             _ => None,
         }
     }
@@ -107,10 +108,10 @@ impl EntityController {
     pub fn from_entity_type(entity_type: EntityType) -> Option<Self> {
         use EntityType::*;
         match entity_type {
-            Bush | Doghouse | Box | Cheese | Fence | Wall | Water => None,
             Cat => Some(ControllerType::Cat),
             Dog => Some(ControllerType::Dog { chain: None }),
             Mouse => Some(ControllerType::Mouse),
+            _ => None,
         }
         .map(|controller_type| Self {
             next_move: Move::Wait,

@@ -43,6 +43,7 @@ impl LevelRenderer {
                     level::EntityType::Mouse => &self.assets.mouse,
                     level::EntityType::Box => &self.assets.box_asset,
                     level::EntityType::Cheese => &self.assets.cheese,
+                    level::EntityType::Bone => &self.assets.bone,
                     level::EntityType::Fence => &self.assets.fence,
                     level::EntityType::Wall => &self.assets.wall,
                     level::EntityType::Water => &self.assets.water,
