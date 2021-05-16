@@ -66,23 +66,11 @@ impl Level {
                 Some(controller) => {
                     let direction = match controller.controller_type {
                         ControllerType::Player => player_move.direction(),
-                        ControllerType::Cat => self.get_move_direction(
+                        _ => self.get_move_direction(
                             entity,
                             VIEW_RADIUS,
-                            vec![EntityType::Dog],
-                            vec![EntityType::Mouse],
-                        ),
-                        ControllerType::Dog { .. } => self.get_move_direction(
-                            entity,
-                            VIEW_RADIUS,
-                            vec![],
-                            vec![EntityType::Cat],
-                        ),
-                        ControllerType::Mouse => self.get_move_direction(
-                            entity,
-                            VIEW_RADIUS,
-                            vec![EntityType::Cat],
-                            vec![],
+                            entity.entity_type.enemies(),
+                            entity.entity_type.attractors(),
                         ),
                     };
                     let next_move = Move::from_direction(direction).unwrap_or(Move::Wait);
@@ -103,26 +91,24 @@ impl Level {
 
     fn make_moves(&mut self) {
         for entity_index in 0..self.entities.len() {
-            let mut entity = self.entities.get(entity_index).unwrap().clone();
-            self.move_entity(&mut entity);
-            *self.entities.get_mut(entity_index).unwrap() = entity;
+            if let Some(mut entity) = self.entities.get(entity_index).cloned() {
+                self.move_entity(&mut entity);
+                self.collide_entity(&mut entity);
+                *self.entities.get_mut(entity_index).unwrap() = entity;
+            }
         }
     }
 
     fn win_state(&self) -> bool {
         if let Some(player) = self.get_player() {
-            if let Some(target_type) = match player.entity_type {
-                EntityType::Cat => Some(EntityType::Mouse),
-                EntityType::Dog => Some(EntityType::Cat),
-                _ => None,
-            } {
-                if !self
+            let targets = player.entity_type.attractors();
+            if targets.len() > 0
+                && !self
                     .entities
                     .iter()
-                    .any(|entity| entity.entity_type == target_type)
-                {
-                    return true;
-                }
+                    .any(|entity| targets.contains(&entity.entity_type))
+            {
+                return true;
             }
         }
         false
@@ -151,8 +137,21 @@ impl Level {
                 } => position_distance(next_pos, *origin) <= *distance,
                 _ => true,
             };
-            if can_move && self.is_empty(next_pos) {
+            if can_move
+                && self
+                    .get_entity(next_pos)
+                    .map_or(true, |entity| !entity.entity_type.collidable())
+            {
                 entity.position = next_pos;
+            }
+        }
+    }
+
+    fn collide_entity(&mut self, entity: &mut Entity) {
+        if let Some(other) = self.get_entity(entity.position) {
+            let attractors = entity.entity_type.attractors();
+            if attractors.contains(&other.entity_type) {
+                self.remove_entity(entity.position);
             }
         }
     }

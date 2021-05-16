@@ -57,6 +57,34 @@ pub enum EntityType {
     Doghouse,
 }
 
+impl EntityType {
+    pub fn enemies(&self) -> Vec<Self> {
+        use EntityType::*;
+        match self {
+            Bush | Doghouse => vec![],
+            Cat => vec![Dog],
+            Dog => vec![],
+            Mouse => vec![Cat],
+        }
+    }
+    pub fn attractors(&self) -> Vec<Self> {
+        use EntityType::*;
+        match self {
+            Bush | Doghouse => vec![],
+            Cat => vec![Mouse],
+            Dog => vec![Cat],
+            Mouse => vec![],
+        }
+    }
+    pub fn collidable(&self) -> bool {
+        use EntityType::*;
+        match self {
+            Bush | Doghouse => true,
+            _ => false,
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct EntityController {
     pub next_move: Move,
