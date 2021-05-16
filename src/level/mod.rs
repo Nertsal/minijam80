@@ -177,11 +177,20 @@ impl Level {
 
     fn collide_entity(&mut self, entity: &Entity) {
         let position = entity.position;
-        if let Some(other) = self.get_entity(position) {
-            let attractors = entity.entity_type.attractors();
-            if attractors.contains(&other.entity_type) {
-                self.remove_entity(position);
-            }
+        for remove_id in self
+            .entities
+            .iter()
+            .filter_map(|(&id, other)| {
+                let attractors = entity.entity_type.attractors();
+                if other.position == position && attractors.contains(&other.entity_type) {
+                    Some(id)
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<Id>>()
+        {
+            self.entities.remove(&remove_id);
         }
     }
 
@@ -195,7 +204,11 @@ impl Level {
                     .contains(&next_entity.entity_type)
                 {
                     return true;
+                } else {
+                    return false;
                 }
+            } else {
+                return true;
             }
         }
         false
