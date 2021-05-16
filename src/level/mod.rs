@@ -18,17 +18,12 @@ pub enum LevelState {
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Level {
-    #[serde(skip)]
-    pub path: String,
     id_generator: IdGenerator,
-    pub next_level: Option<String>,
     pub entities: HashMap<Id, Entity>,
 }
 
 impl Level {
     pub fn turn(&mut self, player_move: Move) {
-        println!("TURN");
-        println!("{:?}", self.entities);
         for entity in self.entities.values_mut() {
             if let Some(c) = &mut entity.controller {
                 c.next_move = Move::Wait;
@@ -41,9 +36,7 @@ impl Level {
 
     pub fn empty() -> Self {
         Self {
-            path: "".to_owned(),
             id_generator: IdGenerator::new(),
-            next_level: None,
             entities: HashMap::new(),
         }
     }
@@ -198,10 +191,6 @@ impl Level {
             .into_iter()
             .map(|(&id, _)| id)
             .collect::<Vec<Id>>();
-        for &entity_id in &entity_ids {
-            let entity = self.entities.get(&entity_id).unwrap();
-            println!("{:?}", entity);
-        }
         let mut state = HashSet::new();
         for entity_id in entity_ids {
             if let Some(entity) = self.entities.get(&entity_id) {
