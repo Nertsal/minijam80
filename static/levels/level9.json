@@ -1,293 +1,329 @@
 {
-    "name": "useful food",
+    "name": "push the box",
     "id_generator": {
-        "next_id": 210
+        "next_id": 306
     },
     "entities": {
-        "111": {
-            "position": {
-                "x": -5,
-                "y": -3
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "180": {
+        "286": {
             "position": {
                 "x": -3,
-                "y": 1
+                "y": 2
             },
             "entity_type": "Bush",
             "controller": null
         },
-        "188": {
-            "position": {
-                "x": -7,
-                "y": 1
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "190": {
-            "position": {
-                "x": -3,
-                "y": 0
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "200": {
-            "position": {
-                "x": 1,
-                "y": 0
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "204": {
-            "position": {
-                "x": 1,
-                "y": -3
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "163": {
+        "298": {
             "position": {
                 "x": -9,
+                "y": -1
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "273": {
+            "position": {
+                "x": 1,
                 "y": 0
             },
             "entity_type": "Bush",
             "controller": null
         },
-        "186": {
+        "276": {
             "position": {
-                "x": -8,
-                "y": 1
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "187": {
-            "position": {
-                "x": -6,
-                "y": 1
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "205": {
-            "position": {
-                "x": 0,
+                "x": 1,
                 "y": -3
             },
             "entity_type": "Bush",
             "controller": null
         },
-        "108": {
-            "position": {
-                "x": -6,
-                "y": -3
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "189": {
+        "290": {
             "position": {
                 "x": -5,
+                "y": 2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "294": {
+            "position": {
+                "x": -9,
                 "y": 1
             },
             "entity_type": "Bush",
             "controller": null
         },
-        "179": {
+        "296": {
             "position": {
-                "x": -3,
-                "y": -3
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "196": {
-            "position": {
-                "x": -2,
-                "y": 1
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "197": {
-            "position": {
-                "x": -1,
-                "y": 1
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "199": {
-            "position": {
-                "x": 1,
-                "y": 1
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "201": {
-            "position": {
-                "x": 1,
+                "x": -9,
                 "y": -2
             },
             "entity_type": "Bush",
             "controller": null
         },
-        "178": {
-            "position": {
-                "x": -3,
-                "y": -2
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "107": {
-            "position": {
-                "x": -7,
-                "y": -3
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "192": {
-            "position": {
-                "x": -2,
-                "y": -2
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "208": {
+        "305": {
             "position": {
                 "x": -4,
                 "y": -1
             },
-            "entity_type": "Cat",
+            "entity_type": "Box",
+            "controller": null
+        },
+        "277": {
+            "position": {
+                "x": 1,
+                "y": -1
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "274": {
+            "position": {
+                "x": 1,
+                "y": -2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "282": {
+            "position": {
+                "x": -1,
+                "y": 0
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "271": {
+            "position": {
+                "x": -3,
+                "y": -4
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "284": {
+            "position": {
+                "x": -1,
+                "y": -2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "267": {
+            "position": {
+                "x": -7,
+                "y": -1
+            },
+            "entity_type": "Dog",
             "controller": {
                 "next_move": "Wait",
                 "last_attractor_pos": null,
                 "controller_type": "Player"
             }
         },
-        "206": {
+        "287": {
             "position": {
                 "x": -1,
+                "y": -3
+            },
+            "entity_type": "Cat",
+            "controller": {
+                "next_move": "Wait",
+                "last_attractor_pos": null,
+                "controller_type": "Cat"
+            }
+        },
+        "226": {
+            "position": {
+                "x": -9,
+                "y": -4
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "270": {
+            "position": {
+                "x": -2,
+                "y": -4
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "266": {
+            "position": {
+                "x": -9,
+                "y": 2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "269": {
+            "position": {
+                "x": -1,
+                "y": -4
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "279": {
+            "position": {
+                "x": -1,
+                "y": 2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "291": {
+            "position": {
+                "x": -6,
+                "y": 2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "288": {
+            "position": {
+                "x": -1,
+                "y": 1
+            },
+            "entity_type": "Cat",
+            "controller": {
+                "next_move": "Wait",
+                "last_attractor_pos": null,
+                "controller_type": "Cat"
+            }
+        },
+        "292": {
+            "position": {
+                "x": -8,
+                "y": 2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "300": {
+            "position": {
+                "x": -6,
+                "y": -4
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "214": {
+            "position": {
+                "x": 1,
+                "y": -4
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "268": {
+            "position": {
+                "x": 0,
+                "y": -4
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "289": {
+            "position": {
+                "x": -4,
+                "y": 2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "212": {
+            "position": {
+                "x": 1,
+                "y": 2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "297": {
+            "position": {
+                "x": -9,
                 "y": -3
             },
             "entity_type": "Bush",
             "controller": null
         },
-        "207": {
+        "283": {
             "position": {
-                "x": -8,
-                "y": -2
+                "x": -1,
+                "y": -1
             },
-            "entity_type": "Mouse",
-            "controller": {
-                "next_move": "Wait",
-                "last_attractor_pos": null,
-                "controller_type": "Mouse"
-            }
+            "entity_type": "Bush",
+            "controller": null
         },
-        "191": {
+        "293": {
             "position": {
-                "x": -2,
+                "x": -7,
+                "y": 2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "272": {
+            "position": {
+                "x": 1,
+                "y": 1
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "295": {
+            "position": {
+                "x": -9,
                 "y": 0
             },
             "entity_type": "Bush",
             "controller": null
         },
-        "160": {
+        "285": {
             "position": {
-                "x": -9,
-                "y": -3
+                "x": -2,
+                "y": 2
             },
             "entity_type": "Bush",
             "controller": null
         },
-        "203": {
-            "position": {
-                "x": 1,
-                "y": -1
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "158": {
+        "299": {
             "position": {
                 "x": -8,
-                "y": -3
+                "y": -4
             },
             "entity_type": "Bush",
             "controller": null
         },
-        "162": {
+        "302": {
             "position": {
-                "x": -9,
-                "y": -1
+                "x": -7,
+                "y": -4
             },
             "entity_type": "Bush",
             "controller": null
         },
-        "195": {
-            "position": {
-                "x": -2,
-                "y": -3
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "109": {
+        "303": {
             "position": {
                 "x": -4,
-                "y": -3
+                "y": -4
             },
             "entity_type": "Bush",
             "controller": null
         },
-        "165": {
-            "position": {
-                "x": -9,
-                "y": 1
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "209": {
-            "position": {
-                "x": -2,
-                "y": -1
-            },
-            "entity_type": "Fish",
-            "controller": null
-        },
-        "184": {
-            "position": {
-                "x": -4,
-                "y": 1
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "161": {
-            "position": {
-                "x": -9,
-                "y": -2
-            },
-            "entity_type": "Bush",
-            "controller": null
-        },
-        "198": {
+        "278": {
             "position": {
                 "x": 0,
-                "y": 1
+                "y": 2
+            },
+            "entity_type": "Bush",
+            "controller": null
+        },
+        "301": {
+            "position": {
+                "x": -5,
+                "y": -4
             },
             "entity_type": "Bush",
             "controller": null
