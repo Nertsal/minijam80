@@ -29,6 +29,7 @@ impl Level {
     pub fn turn(&mut self, player_move: Move) {
         self.calc_moves(player_move);
         self.make_moves();
+        self.collide();
     }
 
     pub fn empty() -> Self {
@@ -106,8 +107,16 @@ impl Level {
         for entity_id in entity_ids {
             if let Some(mut entity) = self.entities.get(&entity_id).cloned() {
                 self.move_entity(&mut entity);
-                self.collide_entity(&entity);
                 *self.entities.get_mut(&entity_id).unwrap() = entity;
+            }
+        }
+    }
+
+    fn collide(&mut self) {
+        let entity_ids: Vec<Id> = self.entities.keys().copied().collect();
+        for entity_id in entity_ids {
+            if let Some(entity) = self.entities.get(&entity_id).cloned() {
+                self.collide_entity(&entity);
             }
         }
     }
