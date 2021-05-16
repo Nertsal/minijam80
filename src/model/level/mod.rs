@@ -6,12 +6,16 @@ const VIEW_RADIUS: i32 = 3;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Level {
+    pub next_level: Option<String>,
     pub entities: Vec<Entity>,
 }
 
 impl Level {
     pub fn empty() -> Self {
-        Self { entities: vec![] }
+        Self {
+            next_level: None,
+            entities: vec![],
+        }
     }
 
     pub fn load(path: impl AsRef<std::path::Path>) -> std::io::Result<Self> {

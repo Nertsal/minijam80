@@ -167,6 +167,10 @@ impl geng::State for GameState {
                     } {
                         self.model.make_move(player_move);
                     }
+                    match key {
+                        geng::Key::Q => self.model.next_level(),
+                        _ => (),
+                    }
                 }
                 _ => (),
             },

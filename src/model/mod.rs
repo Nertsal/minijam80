@@ -56,4 +56,22 @@ impl Model {
         )
         .unwrap();
     }
+
+    pub fn load_level(&mut self, level_path: impl AsRef<std::path::Path>) {
+        self.level = match Level::load(level_path) {
+            Ok(level) => Some(level),
+            Err(err) => {
+                println!("Error loading level: {:?}", err);
+                None
+            }
+        };
+    }
+
+    pub fn next_level(&mut self) {
+        if let Some(level) = &self.level {
+            if let Some(level_name) = level.next_level.clone() {
+                self.load_level(level_name);
+            }
+        }
+    }
 }
