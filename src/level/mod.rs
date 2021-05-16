@@ -172,6 +172,9 @@ impl Level {
                     .last_attractor_pos = None;
                 self.remove_entity(next_pos);
                 true
+            } else if other_entity_type.attractors().contains(&entity_type) {
+                self.remove_entity(position);
+                true
             } else {
                 false
             }
@@ -179,7 +182,9 @@ impl Level {
             true
         };
         if moved {
-            self.get_entity_mut(position).unwrap().position = next_pos;
+            if let Some(entity) = self.get_entity_mut(position) {
+                entity.position = next_pos;
+            }
         }
         moved && Some(next_pos) != prev_pos
     }
