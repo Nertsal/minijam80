@@ -9,6 +9,7 @@ pub struct GameState {
     level: Level,
     level_renderer: LevelRenderer,
     transition: Option<geng::Transition>,
+    win_timer: f64,
 }
 
 impl GameState {
@@ -28,6 +29,7 @@ impl GameState {
             level_renderer: LevelRenderer::new(geng, assets),
             transition: None,
             next_level,
+            win_timer: 1.0,
         }
     }
 }
@@ -36,22 +38,25 @@ impl geng::State for GameState {
     fn update(&mut self, delta_time: f64) {
         self.camera.update(delta_time as f32);
         if self.level.get_state() == LevelState::Win && self.transition.is_none() {
-            let next_level = self.next_level.and_then(|next| {
-                if next < self.assets.levels.len() {
-                    Some(next)
+            self.win_timer -= delta_time;
+            if self.win_timer < 0.0 {
+                let next_level = self.next_level.and_then(|next| {
+                    if next < self.assets.levels.len() {
+                        Some(next)
+                    } else {
+                        None
+                    }
+                });
+                if let Some(next) = next_level {
+                    self.transition = Some(geng::Transition::Switch(Box::new(GameState::new(
+                        &self.geng,
+                        &self.assets,
+                        self.assets.levels[next].clone(),
+                        Some(next + 1),
+                    ))));
                 } else {
-                    None
+                    self.transition = Some(geng::Transition::Pop);
                 }
-            });
-            if let Some(next) = next_level {
-                self.transition = Some(geng::Transition::Switch(Box::new(GameState::new(
-                    &self.geng,
-                    &self.assets,
-                    self.assets.levels[next].clone(),
-                    Some(next + 1),
-                ))));
-            } else {
-                self.transition = Some(geng::Transition::Pop);
             }
         }
         for entity in self.level.entities.values_mut() {
@@ -63,12 +68,16 @@ impl geng::State for GameState {
         self.camera.optimize(&self.level);
         self.level_renderer
             .draw(&self.level, &self.camera, framebuffer);
-        let text = self
-            .level
-            .name
-            .as_ref()
-            .map(|name| name.as_str())
-            .unwrap_or("custom level");
+        let text = match self.level.get_state() {
+            LevelState::Playing => self
+                .level
+                .name
+                .as_ref()
+                .map(|name| name.as_str())
+                .unwrap_or("custom level"),
+            LevelState::Loss => "f",
+            LevelState::Win => "pog",
+        };
         self.level_renderer.renderer.draw_text(
             framebuffer,
             &Camera::new(10.0),
@@ -81,22 +90,23 @@ impl geng::State for GameState {
         );
     }
     fn handle_event(&mut self, event: geng::Event) {
+        let mut player_move = None;
         match event {
             geng::Event::KeyDown { key } => match key {
                 geng::Key::Right => {
-                    self.level.turn(Move::Right);
+                    player_move = Some(Move::Right);
                 }
                 geng::Key::Left => {
-                    self.level.turn(Move::Left);
+                    player_move = Some(Move::Left);
                 }
                 geng::Key::Up => {
-                    self.level.turn(Move::Up);
+                    player_move = Some(Move::Up);
                 }
                 geng::Key::Down => {
-                    self.level.turn(Move::Down);
+                    player_move = Some(Move::Down);
                 }
                 geng::Key::Space => {
-                    self.level.turn(Move::Wait);
+                    player_move = Some(Move::Wait);
                 }
                 geng::Key::R => {
                     self.transition = Some(geng::Transition::Switch(Box::new(GameState::new(
@@ -112,6 +122,11 @@ impl geng::State for GameState {
                 _ => (),
             },
             _ => {}
+        }
+        if let Some(player_move) = player_move {
+            if self.level.get_state() == LevelState::Playing {
+                self.level.turn(player_move);
+            }
         }
     }
     fn transition(&mut self) -> Option<geng::Transition> {
