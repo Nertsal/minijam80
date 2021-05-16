@@ -51,6 +51,16 @@ impl Editor {
             }
         }
     }
+    fn select_delta(&mut self, delta: i32) {
+        let options: Vec<_> = EntityType::into_enum_iter().collect();
+        let idx = options
+            .iter()
+            .position(|var| Some(*var) == self.selected_entity)
+            .unwrap_or(options.len());
+        self.selected_entity = options
+            .get((idx as i32 + delta + options.len() as i32 + 1) as usize % (options.len() + 1))
+            .copied();
+    }
 }
 
 impl geng::State for Editor {
@@ -59,6 +69,13 @@ impl geng::State for Editor {
         self.framebuffer_size = framebuffer.size();
         self.level_renderer
             .draw(&self.level, &self.camera, framebuffer);
+        self.geng.default_font().draw(
+            framebuffer,
+            &format!("{:?}", self.selected_entity),
+            vec2(0.0, 0.0),
+            32.0,
+            Color::BLACK,
+        );
     }
     fn handle_event(&mut self, event: geng::Event) {
         match event {
@@ -70,12 +87,10 @@ impl geng::State for Editor {
                 position,
                 button: geng::MouseButton::Right,
             } => self.spawn_selected(position, true),
+            geng::Event::Wheel { delta } => {
+                self.select_delta(if delta > 0.0 { 1 } else { -1 });
+            }
             geng::Event::KeyDown { key } => match key {
-                geng::Key::Num1 => self.selected_entity = None,
-                geng::Key::Num2 => self.selected_entity = Some(EntityType::Bush),
-                geng::Key::Num3 => self.selected_entity = Some(EntityType::Cat),
-                geng::Key::Num4 => self.selected_entity = Some(EntityType::Dog),
-                geng::Key::Num5 => self.selected_entity = Some(EntityType::Mouse),
                 geng::Key::S => {
                     if self.geng.window().is_key_pressed(geng::Key::LCtrl) {
                         batbox::save_file(
@@ -96,6 +111,8 @@ impl geng::State for Editor {
                         self.level.clone(),
                     ))));
                 }
+                geng::Key::PageUp => self.select_delta(1),
+                geng::Key::PageDown => self.select_delta(-1),
                 _ => (),
             },
             _ => (),

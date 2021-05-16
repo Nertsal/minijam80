@@ -48,7 +48,7 @@ impl Move {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Eq, IntoEnumIterator, Debug)]
 pub enum EntityType {
     Bush,
     Cat,

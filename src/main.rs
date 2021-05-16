@@ -1,3 +1,4 @@
+use enum_iterator::IntoEnumIterator;
 use geng::prelude::*;
 
 mod assets;
