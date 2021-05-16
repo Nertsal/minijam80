@@ -55,7 +55,6 @@ impl geng::State for GameState {
                         Some(next + 1),
                     ))));
                 } else {
-                    self.transition = Some(geng::Transition::Pop);
                 }
             }
         }
@@ -65,29 +64,43 @@ impl geng::State for GameState {
         }
     }
     fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
-        self.camera.optimize(&self.level);
-        self.level_renderer
-            .draw(&self.level, &self.camera, framebuffer);
-        let text = match self.level.get_state() {
-            LevelState::Playing => self
-                .level
-                .name
-                .as_ref()
-                .map(|name| name.as_str())
-                .unwrap_or("custom level"),
-            LevelState::Loss => "f",
-            LevelState::Win => "pog",
-        };
-        self.level_renderer.renderer.draw_text(
-            framebuffer,
-            &Camera::new(10.0),
-            text,
-            vec2(0.0, 4.0),
-            0.5,
-            1.0,
-            &self.assets.font,
-            Color::BLACK,
-        );
+        if self.win_timer > 0.0 {
+            self.camera.optimize(&self.level);
+            self.level_renderer
+                .draw(&self.level, &self.camera, framebuffer);
+            let text = match self.level.get_state() {
+                LevelState::Playing => self
+                    .level
+                    .name
+                    .as_ref()
+                    .map(|name| name.as_str())
+                    .unwrap_or("custom level"),
+                LevelState::Loss => "f",
+                LevelState::Win => "pog",
+            };
+            self.level_renderer.renderer.draw_text(
+                framebuffer,
+                &Camera::new(10.0),
+                text,
+                vec2(0.0, 4.0),
+                0.5,
+                1.0,
+                &self.assets.font,
+                Color::BLACK,
+            );
+        } else {
+            ugli::clear(framebuffer, Some(Color::BLACK), None);
+            self.level_renderer.renderer.draw_text(
+                framebuffer,
+                &Camera::new(3.0),
+                "gg",
+                vec2(0.0, -1.0),
+                0.5,
+                2.0,
+                &self.assets.font,
+                Color::WHITE,
+            );
+        }
     }
     fn handle_event(&mut self, event: geng::Event) {
         let mut player_move = None;
