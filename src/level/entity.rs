@@ -1,6 +1,6 @@
 use super::*;
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Entity {
     pub position: Vec2<i32>,
     pub entity_type: EntityType,
@@ -17,7 +17,7 @@ pub fn position_distance(pos1: Vec2<i32>, pos2: Vec2<i32>) -> i32 {
     (pos1.x - pos2.x).abs() + (pos1.y - pos2.y).abs()
 }
 
-#[derive(Serialize, Deserialize, Clone, Copy, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Debug)]
 pub enum Move {
     Wait,
     Up,
@@ -98,7 +98,7 @@ pub enum EntityProperty {
     Pushable,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct EntityController {
     pub next_move: Move,
     pub last_attractor_pos: Option<Vec2<i32>>,
@@ -122,7 +122,7 @@ impl EntityController {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum ControllerType {
     Player,
     Cat,
@@ -130,7 +130,7 @@ pub enum ControllerType {
     Mouse,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Chain {
     pub origin: Vec2<i32>,
     pub distance: i32,

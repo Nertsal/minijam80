@@ -27,10 +27,15 @@ pub struct Level {
 
 impl Level {
     pub fn turn(&mut self, player_move: Move) {
-        self.calc_moves(player_move);
-        for _ in 0..2 {
-            self.make_moves();
+        println!("TURN");
+        println!("{:?}", self.entities);
+        for entity in self.entities.values_mut() {
+            if let Some(c) = &mut entity.controller {
+                c.next_move = Move::Wait;
+            }
         }
+        self.calc_moves(player_move);
+        self.make_moves();
         self.collide();
     }
 
@@ -139,6 +144,57 @@ impl Level {
         }
     }
 
+    fn move_entity(
+        &mut self,
+        prev_pos: Option<Vec2<i32>>,
+        position: Vec2<i32>,
+        override_direction: Option<Vec2<i32>>,
+        state: &mut HashSet<Id>,
+    ) -> bool {
+        let (&entity_id, entity) = self.get_entity(position).unwrap();
+        let entity_type = entity.entity_type;
+        let direction = entity
+            .controller
+            .as_ref()
+            .map(|c| c.next_move.direction())
+            .or(override_direction)
+            .unwrap_or(vec2(0, 0));
+        if direction == vec2(0, 0) {
+            return false;
+        }
+        if !state.insert(entity_id) {
+            return false;
+        }
+        let next_pos = entity.position + direction;
+        let moved = if let Some((_, other)) = self.get_entity(next_pos) {
+            let other_entity_type = other.entity_type;
+            if !entity_type.attractors().contains(&other.entity_type)
+                && other.entity_type.property() == Some(EntityProperty::Pushable)
+            {
+                self.move_entity(Some(position), next_pos, Some(direction), state)
+            } else if self.move_entity(Some(position), next_pos, None, state) {
+                true
+            } else if entity_type.attractors().contains(&other_entity_type) {
+                self.get_entity_mut(position)
+                    .unwrap()
+                    .controller
+                    .as_mut()
+                    .unwrap()
+                    .last_attractor_pos = None;
+                self.remove_entity(next_pos);
+                true
+            } else {
+                false
+            }
+        } else {
+            true
+        };
+        if moved {
+            self.get_entity_mut(position).unwrap().position = next_pos;
+        }
+        moved && Some(next_pos) != prev_pos
+    }
+
     fn make_moves(&mut self) {
         let mut entity_ids = self.entities.iter().collect::<Vec<(&Id, &Entity)>>();
         entity_ids.sort_by_key(|(_, entity)| (-entity.position.y, entity.position.x));
@@ -146,10 +202,14 @@ impl Level {
             .into_iter()
             .map(|(&id, _)| id)
             .collect::<Vec<Id>>();
+        for &entity_id in &entity_ids {
+            let entity = self.entities.get(&entity_id).unwrap();
+            println!("{:?}", entity);
+        }
+        let mut state = HashSet::new();
         for entity_id in entity_ids {
-            if let Some(mut entity) = self.entities.get(&entity_id).cloned() {
-                self.move_entity(&mut entity);
-                *self.entities.get_mut(&entity_id).unwrap() = entity;
+            if let Some(entity) = self.entities.get(&entity_id) {
+                self.move_entity(None, entity.position, None, &mut state);
             }
         }
     }
@@ -195,32 +255,32 @@ impl Level {
         })
     }
 
-    fn move_entity(&mut self, entity: &mut Entity) {
-        if let Some(controller) = &entity.controller {
-            if controller.next_move == Move::Wait {
-                return;
-            }
-            let direction = controller.next_move.direction();
-            let position = entity.position;
-            let next_pos = position + direction;
-            let can_move = match &controller.controller_type {
-                ControllerType::Dog {
-                    chain: Some(Chain { origin, distance }),
-                } => position_distance(next_pos, *origin) <= *distance,
-                _ => true,
-            };
-            if can_move {
-                if self.can_move(position, direction) {
-                    entity.controller.as_mut().unwrap().next_move = Move::Wait;
-                    entity.position = next_pos;
-                } else if let Some(last_position) = self.can_push(position, direction) {
-                    self.push(position, last_position, direction);
-                    entity.controller.as_mut().unwrap().next_move = Move::Wait;
-                    entity.position = next_pos;
-                }
-            }
-        }
-    }
+    // fn move_entity(&mut self, entity: &mut Entity) {
+    //     if let Some(controller) = &entity.controller {
+    //         if controller.next_move == Move::Wait {
+    //             return;
+    //         }
+    //         let direction = controller.next_move.direction();
+    //         let position = entity.position;
+    //         let next_pos = position + direction;
+    //         let can_move = match &controller.controller_type {
+    //             ControllerType::Dog {
+    //                 chain: Some(Chain { origin, distance }),
+    //             } => position_distance(next_pos, *origin) <= *distance,
+    //             _ => true,
+    //         };
+    //         if can_move {
+    //             if self.can_move(position, direction) {
+    //                 entity.controller.as_mut().unwrap().next_move = Move::Wait;
+    //                 entity.position = next_pos;
+    //             } else if let Some(last_position) = self.can_push(position, direction) {
+    //                 self.push(position, last_position, direction);
+    //                 entity.controller.as_mut().unwrap().next_move = Move::Wait;
+    //                 entity.position = next_pos;
+    //             }
+    //         }
+    //     }
+    // }
 
     fn collide_entity(&mut self, entity: &Entity) {
         let position = entity.position;
