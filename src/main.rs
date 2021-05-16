@@ -41,7 +41,17 @@ fn main() {
             let geng = geng.clone();
             move |assets| {
                 let assets = assets.unwrap();
-                Editor::new(&geng, &Rc::new(assets))
+                let assets = Rc::new(assets);
+                if std::env::args().any(|arg| arg == "editor") {
+                    Box::new(Editor::new(&geng, &assets)) as Box<dyn geng::State>
+                } else {
+                    Box::new(GameState::new(
+                        &geng,
+                        &assets,
+                        assets.levels[0].clone(),
+                        Some(1),
+                    )) as Box<dyn geng::State>
+                }
             }
         }),
     );

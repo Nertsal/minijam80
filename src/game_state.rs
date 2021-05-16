@@ -3,6 +3,7 @@ use super::*;
 pub struct GameState {
     geng: Rc<Geng>,
     assets: Rc<Assets>,
+    next_level: Option<usize>,
     camera: Camera,
     initial_level: Level,
     level: Level,
@@ -11,7 +12,12 @@ pub struct GameState {
 }
 
 impl GameState {
-    pub fn new(geng: &Rc<Geng>, assets: &Rc<Assets>, level: Level) -> Self {
+    pub fn new(
+        geng: &Rc<Geng>,
+        assets: &Rc<Assets>,
+        level: Level,
+        next_level: Option<usize>,
+    ) -> Self {
         let initial_level = level.clone();
         Self {
             geng: geng.clone(),
@@ -21,6 +27,7 @@ impl GameState {
             level,
             level_renderer: LevelRenderer::new(geng, assets),
             transition: None,
+            next_level,
         }
     }
 }
@@ -28,6 +35,25 @@ impl GameState {
 impl geng::State for GameState {
     fn update(&mut self, delta_time: f64) {
         self.camera.update(delta_time as f32);
+        if self.level.get_state() == LevelState::Win && self.transition.is_none() {
+            let next_level = self.next_level.and_then(|next| {
+                if next < self.assets.levels.len() {
+                    Some(next)
+                } else {
+                    None
+                }
+            });
+            if let Some(next) = next_level {
+                self.transition = Some(geng::Transition::Switch(Box::new(GameState::new(
+                    &self.geng,
+                    &self.assets,
+                    self.assets.levels[next].clone(),
+                    Some(next + 1),
+                ))));
+            } else {
+                self.transition = Some(geng::Transition::Pop);
+            }
+        }
     }
     fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
         self.level_renderer
@@ -56,6 +82,7 @@ impl geng::State for GameState {
                         &self.geng,
                         &self.assets,
                         self.initial_level.clone(),
+                        self.next_level,
                     ))));
                 }
                 geng::Key::Escape => {

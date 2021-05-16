@@ -9,7 +9,7 @@ use id::*;
 
 const VIEW_RADIUS: i32 = 3;
 
-#[derive(Serialize, Deserialize, Clone, Copy)]
+#[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
 pub enum LevelState {
     Playing,
     Win,

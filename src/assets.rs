@@ -41,6 +41,15 @@ impl geng::LoadAsset for Font {
     const DEFAULT_EXT: Option<&'static str> = Some("ttf");
 }
 
+impl geng::LoadAsset for Level {
+    fn load(geng: &Rc<Geng>, path: &str) -> geng::AssetFuture<Self> {
+        Box::pin(
+            <String as geng::LoadAsset>::load(geng, path).map(|s| Ok(serde_json::from_str(&s?)?)),
+        )
+    }
+    const DEFAULT_EXT: Option<&'static str> = None;
+}
+
 #[derive(geng::Assets)]
 pub struct Assets {
     pub cat: Texture,
@@ -59,6 +68,8 @@ pub struct Assets {
     pub wall: Texture,
     pub water: Texture,
     pub fish: Texture,
+    #[asset(path = "levels/level*.json", range = "1..=3")]
+    pub levels: Vec<Level>,
 }
 
 impl Assets {

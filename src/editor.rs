@@ -152,6 +152,7 @@ impl geng::State for Editor {
                         &self.geng,
                         &self.assets,
                         self.level.clone(),
+                        None,
                     ))));
                 }
                 geng::Key::PageUp => self.select_delta(1),
