@@ -136,6 +136,7 @@ impl geng::State for Editor {
                 geng::Key::Num6 => self.selected_entity = Some(EntityType::Box),
                 geng::Key::Num7 => self.selected_entity = Some(EntityType::Cheese),
                 geng::Key::Num8 => self.selected_entity = Some(EntityType::Bone),
+                #[cfg(not(target_arch = "wasm32"))]
                 geng::Key::S if self.geng.window().is_key_pressed(geng::Key::LCtrl) => {
                     batbox::save_file(
                         "Save custom level",
@@ -147,6 +148,7 @@ impl geng::State for Editor {
                     )
                     .unwrap();
                 }
+                #[cfg(not(target_arch = "wasm32"))]
                 geng::Key::O if self.geng.window().is_key_pressed(geng::Key::LCtrl) => {
                     if let Some(path) = batbox::select_file("Load level") {
                         self.level =
