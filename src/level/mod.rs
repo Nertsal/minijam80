@@ -100,40 +100,40 @@ impl Level {
                 None => {}
             }
         }
-        let mut ignore_ids = Vec::new();
+        // let mut ignore_ids = Vec::new();
         for (update_id, update_move) in updates {
-            if ignore_ids.contains(&update_id) {
-                continue;
-            }
+            // if ignore_ids.contains(&update_id) {
+            //     continue;
+            // }
 
-            if update_move != Move::Wait {
-                let entity = self.entities.get(&update_id).unwrap();
-                let move_pos = entity.position + update_move.direction();
-                if let Some((&move_entity_id, move_entity)) = self.get_entity(move_pos) {
-                    if let Some(controller) = &move_entity.controller {
-                        if controller.next_move.direction() == -update_move.direction() {
-                            // Two units try to move through each other
-                            if entity
-                                .entity_type
-                                .attractors()
-                                .contains(&move_entity.entity_type)
-                            {
-                                ignore_ids.push(move_entity_id);
-                            } else if move_entity
-                                .entity_type
-                                .attractors()
-                                .contains(&entity.entity_type)
-                            {
-                                ignore_ids.push(update_id);
-                            } else {
-                                ignore_ids.push(update_id);
-                                ignore_ids.push(move_entity_id);
-                            }
-                            continue;
-                        }
-                    }
-                }
-            }
+            // if update_move != Move::Wait {
+            //     let entity = self.entities.get(&update_id).unwrap();
+            //     let move_pos = entity.position + update_move.direction();
+            //     if let Some((&move_entity_id, move_entity)) = self.get_entity(move_pos) {
+            //         if let Some(controller) = &move_entity.controller {
+            //             if controller.next_move.direction() == -update_move.direction() {
+            //                 // Two units try to move through each other
+            //                 if entity
+            //                     .entity_type
+            //                     .attractors()
+            //                     .contains(&move_entity.entity_type)
+            //                 {
+            //                     ignore_ids.push(move_entity_id);
+            //                 } else if move_entity
+            //                     .entity_type
+            //                     .attractors()
+            //                     .contains(&entity.entity_type)
+            //                 {
+            //                     ignore_ids.push(update_id);
+            //                 } else {
+            //                     ignore_ids.push(update_id);
+            //                     ignore_ids.push(move_entity_id);
+            //                 }
+            //                 continue;
+            //             }
+            //         }
+            //     }
+            // }
 
             let entity = self.entities.get_mut(&update_id).unwrap();
             entity.controller.as_mut().unwrap().next_move = update_move;
